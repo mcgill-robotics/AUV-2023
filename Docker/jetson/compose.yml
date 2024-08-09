@@ -18,7 +18,6 @@ services:
     runtime: nvidia
     command: bash -c ${OVERRIDE_COMMAND:-"tail -f /dev/null"}
     network_mode: host
-    restart: always
     build: .
     deploy:
       resources:
@@ -43,7 +42,6 @@ services:
       - UDEV=on
     runtime: nvidia
     network_mode: host
-    restart: always
     deploy:
       resources:
         reservations:
@@ -64,4 +62,3 @@ services:
       - QT_X11_NO_MITSHM=1
       - NVIDIA_VISIBLE_DEVICES=all
     network_mode: host
-    restart: always
