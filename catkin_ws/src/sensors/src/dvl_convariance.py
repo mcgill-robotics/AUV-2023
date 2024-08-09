@@ -8,40 +8,6 @@ import numpy as np
 
 RAD_PER_DEG = np.pi / 180.0
 
-def parse_velocity_report(line):
-    tokens = line.split(",")
-    vx = float(tokens[1])
-    vy = float(tokens[2])
-    vz = float(tokens[3])
-    valid_string = tokens[4]
-    if valid_string == "y":
-        valid = True
-    else:
-        valid = False
-    altitude = float(tokens[5])
-    fom = float(tokens[6])
-    covariance = [float(x) for x in tokens[7].split(";")]
-    time_of_validity = float(tokens[8])
-    time_of_transmission = float(tokens[9])
-    time_since_last_report = float(tokens[10])
-    status = bool(tokens[11])
-
-    report = TwistWithCovarianceStamped()
-    report.twist.twist.linear.x = vx
-    report.twist.twist.linear.y = -vy
-    report.twist.twist.linear.z = -vz
-    # report.twist.covariance = covariance
-    for i in range(3):
-        for j in range(3):
-            report.twist.covariance[i * 6 + j] = covariance[i * 3 + j]
-    report.header.frame_id = "dvl"
-    report.header.stamp = rospy.Time.now()
-
-    return report
-    # print(f"\nvx: {vx}, vy: {vy}, vz: {vz}, valid: {valid}, altitude: {altitude}, \
-    #        fom: {fom}, covariance: {covariance}, time valid: {time_of_validity}, time_of_transmission: {time_of_transmission}, \
-    #         time_since_last_report: {time_since_last_report}, state: {state}")
-
 
 def parse_dead_reckon_report(line, quat_variance):
     tokens = line.split(",")
@@ -54,26 +20,9 @@ def parse_dead_reckon_report(line, quat_variance):
     pitch = float(tokens[7])
     yaw = float(tokens[8])
     status = bool(tokens[9])
+    return [roll, pitch, yaw]
 
-    report = PoseWithCovarianceStamped()
-    report.pose.pose.position.x = x
-    report.pose.pose.position.y = y
-    report.pose.pose.position.z = z
 
-    quaternion = transformations.quaternion_from_euler(roll * RAD_PER_DEG, pitch * RAD_PER_DEG, yaw * RAD_PER_DEG)
-    report.pose.pose.orientation.x = quaternion[0]
-    report.pose.pose.orientation.y = quaternion[1]
-    report.pose.pose.orientation.z = quaternion[2]
-    report.pose.pose.orientation.w = quaternion[3]
-    report.pose.covariance = [0.0] * 36
-    for i in range(0,3):
-        report.pose.covariance[i * 6 + i] = std
-
-    for i in range(3,6):
-        report.pose.covariance[i * 6 + i] = quat_variance
-    report.header.frame_id = "dvl"
-    report.header.stamp = rospy.Time.now()
-    return report
 
 def main():
     rospy.init_node("waterlinked_driver")
@@ -124,18 +73,22 @@ def main():
 
     # Only grabbing data we care about but this dvl can be used for more.
     # Refer to work horse manual for more info
-    while conn.is_open and not rospy.is_shutdown():
+    start = rospy.Time.now()
+    eulers = []
+    while conn.is_open and not rospy.is_shutdown() and rospy.Time.now() - start < rospy.Duration(30):
         try:
             line = conn.readline().decode("utf-8")
             # print(line)
-            if line.startswith("wrz"):
-                pub_vr.publish(parse_velocity_report(line))
-            elif line.startswith("wrp"):
-                pub_dr.publish(parse_dead_reckon_report(line, quat_variance))
+            if line.startswith("wrp"):
+                eulers.append(parse_dead_reckon_report(line, quat_variance))
         except Exception as e:
             print(e)
             conn.close()
             exit()
+    eulers = np.array(eulers)
+    eulers_cov = np.cov(eulers.T)
+    print('Eulers Covariance:')
+    print(eulers_cov)
 
 
 if __name__ == "__main__":

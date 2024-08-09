@@ -11,5 +11,6 @@
     <!-- Set ROS parameters -->
     <param name="port" value="$(arg port)" type="str"/>
     <param name="baudrate" value="$(arg baudrate)" type="int"/>
+    <param name="quat_variance" value="0.0001" type="double"/>
   </node>
 </launch>

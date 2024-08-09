@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(state_estimation)
 
-set(MSG_DEP_SET geometry_msgs sensor_msgs std_msgs auv_msgs)
+set(MSG_DEP_SET geometry_msgs std_msgs auv_msgs nav_msgs)
 
 find_package(catkin REQUIRED COMPONENTS
 	${MSG_DEP_SET}
@@ -13,7 +13,6 @@ find_package(catkin REQUIRED COMPONENTS
 	tf2_geometry_msgs
 	tf2_ros
   tf2_msgs
-  sbg_driver
 )
 
 catkin_package( CATKIN_DEPENDS
@@ -24,7 +23,6 @@ catkin_package( CATKIN_DEPENDS
 	tf2
 	tf2_geometry_msgs
 	tf2_ros
-  sbg_driver
 	INCLUDE_DIRS include
 )
 
@@ -38,33 +36,30 @@ include_directories(
 )
 
 
-add_library(sensors_lib
-  src/sensors.cpp
-)
 
-add_executable(${PROJECT_NAME}
-  src/state_aggregator.cpp
+add_executable(odom_republisher
+  src/odom_republisher.cpp
 )
 
 target_link_libraries(
-  ${PROJECT_NAME} 
-  sensors_lib 
+  odom_republisher
   ${roscpp_LIBRARIES} 
   ${tf2_ros_LIBRARIES}
   ${tf2_LIBRARIES}
   ${tf2_geometry_msgs_LIBRARIES}
   ${geometry_msgs_LIBRARIES}
+  ${nav_msgs_LIBRARIES}
 )
 
 
 
 install(
-  TARGETS ${PROJECT_NAME}
+  TARGETS odom_republisher
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
 )
 install(
-  DIRECTORY include/${PROJECT_NAME}
+  DIRECTORY include/odom_republisher
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 )

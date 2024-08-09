@@ -23,6 +23,30 @@ catkin_package( CATKIN_DEPENDS
   rosserial_client
 )
 
+include_directories(
+  ${catkin_INCLUDE_DIRS}
+  ${roscpp_INCLUDE_DIRS}
+)
+
+add_executable(depth_republisher
+  src/depth_republish.cpp
+)
+
+add_executable(imu_republisher
+  src/imu_republish.cpp
+)
+
+target_link_libraries(
+  depth_republisher
+  ${roscpp_LIBRARIES} 
+  ${geometry_msgs_LIBRARIES}
+)
+
+target_link_libraries(
+  imu_republisher
+  ${roscpp_LIBRARIES} 
+  ${geometry_msgs_LIBRARIES}
+)
 
 install(PROGRAMS
   src/start_zed_bridge.sh

@@ -1,29 +1,58 @@
 <launch>
 	<arg name="sim" default="false" />
+	<arg name="ekf" default="true" />
 	<param name="update_rate" value="100" />
 	<param name="z_pos_mount_offset" value="0" />
 	<param name="sensor_swap_warning_interval" value="5"/> <!-- secs -->
 	<group unless="$(arg sim)">
-		<param name="q_imunominal_imu_w" value="0.0" />
-		<param name="q_imunominal_imu_x" value="0.0" />
-		<param name="q_imunominal_imu_y" value="0.0" />
-		<param name="q_imunominal_imu_z" value="1.0"/>
-
-		<param name="q_dvlnominal_dvl_w" value="0.70707070707" />
-		<param name="q_dvlnominal_dvl_x" value="0.0" />
-		<param name="q_dvlnominal_dvl_y" value="0.0"/>
-		<param name="q_dvlnominal_dvl_z" value="0.70707070707" />
+	
 
 		<param name="auv_dvl_offset_x" value="0.0" />
 		<param name="auv_dvl_offset_y" value="0.0" />
 		<param name="auv_dvl_offset_z" value="-0.3" />
 		
+		<arg name="q_imunominalup_imuup_w" default="0.0" />
+		<arg name="q_imunominalup_imuup_x" default="0.0" />
+		<arg name="q_imunominalup_imuup_y" default="0.0" />
+		<arg name="q_imunominalup_imuup_z" default="1.0" />
+
+		<arg name="q_dvlnominalup_dvlup_w" default="0.707" />
+		<arg name="q_dvlnominalup_dvlup_x" default="0.0" />
+		<arg name="q_dvlnominalup_dvlup_y" default="0.0" />
+		<arg name="q_dvlnominalup_dvlup_z" default="-0.707" />
+
+		<arg name="auv_dvl_offset_x" default="0.0" />
+		<arg name="auv_dvl_offset_y" default="0.0" />
+		<arg name="auv_dvl_offset_z" default="0.0" />
+
+		<node name="dvl_transform_pub" pkg="tf2_ros" type="static_transform_publisher" args="
+		$(arg auv_dvl_offset_x) $(arg auv_dvl_offset_y) $(arg auv_dvl_offset_z) 
+		$(arg q_dvlnominalup_dvlup_x) $(arg q_dvlnominalup_dvlup_y) $(arg q_dvlnominalup_dvlup_z) $(arg q_dvlnominalup_dvlup_w) 
+		auv dvl" />
+		<node name="imu_transform_pub" pkg="tf2_ros" type="static_transform_publisher" args="0 0 0 
+		$(arg q_imunominalup_imuup_x) $(arg q_imunominalup_imuup_y) $(arg q_imunominalup_imuup_z) $(arg q_imunominalup_imuup_w) 
+		auv imu" />
+		
+		<node pkg="tf2_ros" type="static_transform_publisher" name="depth_transform_pub" args="0 0 0 0 0 0 1 auv depth" />
+
 		<param name="update_state_on_clock" value="false" />
-		<node name="state_aggregator" pkg="state_estimation" type="state_aggregator.py" respawn="true" output="screen"/>
+		<group if="$(arg ekf)">
+			<include file="$(find state_estimation)/launch/localization.launch">
+				<arg name="remove_gravity" value="true" />
+			</include>
+		</group>
 	</group>
+
 	<group if="$(arg sim)">
 		<param name="update_state_on_clock" value="true" />
-		<node name="state_aggregator" pkg="state_estimation" type="state_aggregator.py" respawn="true" output="screen"/>
+		<include file="$(find state_estimation)/launch/hydrophones.launch"/>
+		<group if="$(arg ekf)">
+			<include file="$(find state_estimation)/launch/localization.launch">
+				<arg name="remove_gravity" value="false" />
+			</include>
+		</group>
 	</group>	
-	<include file="$(find state_estimation)/launch/hydrophones.launch"/>
+
+	
+	
 </launch>

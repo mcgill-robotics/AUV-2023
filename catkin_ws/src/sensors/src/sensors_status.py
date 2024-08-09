@@ -4,10 +4,10 @@ import rospy
 import numpy as np
 import quaternion
 
-from auv_msgs.msg import DeadReckonReport, PingerTimeDifference
-from sbg_driver.msg import SbgEkfQuat, SbgImuData
+from auv_msgs.msg import PingerTimeDifference
 from std_msgs.msg import Float64, Int32
 from sensor_msgs.msg import Image, Imu
+from geometry_msgs.msg import TwistWithCovarianceStamped
 
 Q_NWU_NED = np.quaternion(0, 1, 0, 0)
 Q_IMUNOMINAL_AUV = np.quaternion(0, 1, 0, 0)
@@ -48,8 +48,8 @@ class Sensor:
                 > self.sensor_warning_interval
             ):
                 self.last_inactive_message_time = rospy.get_time()
-                # rospy.logwarn("{} is inactive.".format(self.sensor_name))
-            self.active = False
+                rospy.logwarn("{} is inactive.".format(self.sensor_name))
+            self.is_active = False
             return 0
         else:
             if not self.is_active:
@@ -93,18 +93,15 @@ class IMU(Sensor):
         super().__init__("IMU")
         self.current_reading = [np.quaternion(1, 0, 0, 0), [0, 0, 0]]
         self.last_reading = [np.quaternion(1, 0, 0, 0), [0, 0, 0]]
-        rospy.Subscriber("/sensors/imu/quaternion", SbgEkfQuat, self.quat_cb)
-        rospy.Subscriber("/sensors/imu/angular_velocity", SbgImuData, self.ang_vel_cb)
+        rospy.Subscriber("/sensors/imu/data", Imu, self.imu_cb)
 
-    def quat_cb(self, msg):
-        q = msg.quaternion
+    def imu_cb(self, msg):
+        q = msg.orientation
+        ang_vel = msg.angular_velocity
         self.current_reading[0] = np.quaternion(q.w, q.x, q.y, q.z)
+        self.current_reading[1] = [ang_vel.x, ang_vel.y, ang_vel.z]
         self.update_last_reading()
 
-    def ang_vel_cb(self, msg):
-        gyro = msg.gyro
-        self.current_reading[1] = [gyro.x, gyro.y, gyro.z]
-        self.update_last_reading()
 
     def update_last_reading(self):
         if self.current_reading != self.last_reading:
@@ -165,13 +162,13 @@ class DVL(Sensor):
     def __init__(self):
         super().__init__("DVL")
 
-        self.current_reading = [None, None, None, None, None, None]
-        self.last_reading = [None, None, None, None, None, None]
+        self.current_reading = [None, None, None]
+        self.last_reading = [None, None, None]
 
-        rospy.Subscriber("/sensors/dvl/pose", DeadReckonReport, self.dead_reckon_cb)
+        rospy.Subscriber("/sensors/dvl/twist", TwistWithCovarianceStamped, self.twist_cb)
 
-    def dead_reckon_cb(self, msg):
-        self.current_reading = [msg.x, msg.y, msg.z, msg.roll, msg.pitch, msg.yaw]
+    def twist_cb(self, msg):
+        self.current_reading = [msg.twist.twist.linear.x, msg.twist.twist.linear.y, msg.twist.twist.linear.z]
         self.update_last_reading()
 
     def update_last_reading(self):

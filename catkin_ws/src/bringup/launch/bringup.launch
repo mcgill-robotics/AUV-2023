@@ -3,11 +3,13 @@
 	<arg name="bag" default="false" />
 	<arg name="vision" default="false" />
 	<arg name="actions" default="false" />
-	
+	<arg name="ekf" default="true" />
+
 	<include file="$(find state_estimation)/launch/state_estimation.launch">
 		<arg name="sim" value="$(arg sim)" />
+		<arg name="ekf" value="$(arg ekf)" />
 	</include>
-	
+
 	<group unless="$(arg sim)">
 		<include file="$(find sensors)/launch/sensors.launch">
 			<arg name="vision" value="$(arg vision)" />
@@ -15,6 +17,9 @@
 	</group>
 	<group if="$(arg sim)">
 		<include file="$(find sensors)/launch/sensors_status.launch"/>
+		<node name="depth_republish" pkg="sensors" type="depth_republisher" output="screen">
+			<param name="variance" value="0.0"/>
+		</node>
 	</group>
 
 	<include file="$(find controls)/launch/controls.launch">

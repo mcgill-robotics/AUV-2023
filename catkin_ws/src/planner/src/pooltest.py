@@ -5,14 +5,10 @@ from substates.utility.functions import countdown
 
 rospy.init_node("pooltest")
 
-countdown(120)
-
-exit()
-
 controls = Controller(rospy.Time(0))
 
 controls.flatten()
-controls.moveDelta([0,0,-0.25])
+controls.moveDelta([0,0,-0.3])
 print("FLATTENING")
 # controls.freeze_pose()
 # controls.freeze_position()

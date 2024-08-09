@@ -26,7 +26,7 @@ controls = Controller(rospy.Time(0))
 
 
 update_display("MOVE2GATE")
-controls.rotateDeltaEuler([0, 0, 0])
+controls.rotateDeltaEuler([0, 0, 0]) #TODO: change rotation based on flip coin
 angle_to_gate = state.theta_z
 controls.moveDelta([None, None, -0.75])
 controls.moveDelta([1, None, None])
@@ -34,7 +34,7 @@ controls.moveDelta([1, None, None])
 
 update_display("TRICKS")
 for _ in range(2 * 3):
-    controls.rotateDeltaEuler((120.0, 0, 0))
+    controls.rotateDeltaEuler((0, 0, 120))
 
 
 update_display("GATE")

@@ -65,7 +65,8 @@ RUN apt-get install -y ros-noetic-rosserial-arduino \
     ros-noetic-image-view \
     ros-noetic-rqt-gui \
     ros-noetic-smach-ros \
-    ros-noetic-usb-cam
+    ros-noetic-usb-cam \
+    ros-noetic-robot-localization
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
