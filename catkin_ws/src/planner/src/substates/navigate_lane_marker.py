@@ -19,6 +19,8 @@ class NavigateLaneMarker(smach.State):
         self.thread_timer = None
         self.timeout_occurred = False
         self.time_limit = rospy.get_param("navigate_lane_marker_time_limit")
+        self.centering_dist_threshold = rospy.get_param("center_dist_threshold")
+        self.centering_delta_increment = rospy.get_param("centering_delta_increment")
 
         self.pub_mission_display = rospy.Publisher(
             "/mission_display", String, queue_size=1

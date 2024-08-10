@@ -3,6 +3,7 @@
 import rospy
 import math
 from auv_msgs.msg import VisionObjectArray
+from std_msgs.msg import Int32MultiArray
 
 
 class ObjectMapper:
@@ -13,6 +14,22 @@ class ObjectMapper:
             "vision/object_map", VisionObjectArray, self.mapUpdateCb
         )
         self.NULL_PLACEHOLDER = rospy.get_param("NULL_PLACEHOLDER")
+        rospy.Subscriber("/vision/down_cam/bbox", Int32MultiArray, self.callback_object_detection)
+
+        self.delta_height = 1000
+        self.delta_width = 1000
+        self.distance = 1000
+
+    def callback_object_detection(self, msg):
+        bbox_x, bbox_y, image_len_x, image_len_y = msg.data
+
+        image_x_center = image_len_x/2
+        image_y_center = image_len_y/2
+
+        self.delta_width = bbox_x-image_x_center
+        self.delta_height = bbox_y-image_y_center
+
+        self.distance = ((self.delta_height ** 2) + (self.delta_width ** 2))**0.5
 
     def mapUpdateCb(self, msg):
         self.map = []

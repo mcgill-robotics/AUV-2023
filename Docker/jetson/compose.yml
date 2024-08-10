@@ -42,6 +42,7 @@ services:
       - UDEV=on
     runtime: nvidia
     network_mode: host
+    command: bash -c "source /opt/ros/humble/setup.bash && source /root/ros2_ws/install/local_setup.bash && ros2 launch zed_wrapper zed_camera.launch.py camera_model:=zed2i"
     deploy:
       resources:
         reservations:

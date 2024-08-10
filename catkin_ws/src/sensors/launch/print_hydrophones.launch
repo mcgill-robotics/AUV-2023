@@ -1,0 +1,3 @@
+<launch>
+	<node name="hydrophones_printer" pkg="sensors" output="screen" type="print_hydrophones.py" respawn="true" />
+</launch>

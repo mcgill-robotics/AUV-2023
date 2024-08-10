@@ -71,7 +71,7 @@ def find_closest_object(observation, indexToIgnore=-1):
         obj_label, obj_x, obj_y, obj_z, _, _, _, _ = object_map[obj_i]
         if observed_label != obj_label or obj_i == indexToIgnore:
             continue
-        # Gind distance between object in map and observation.
+        # Find distance between object in map and observation.
         # Ignore Z position when reducing map.
         objs_distance_apart = (
             dist((obj_x, obj_y, obj_z), (observed_x, observed_y, observed_z))
@@ -155,7 +155,7 @@ def update_map(obj_i, observation):
     )
 
     if label == "Lane Marker":
-        # Lane marker had to dealt with differentlt for theta z and extra_field.
+        # Lane marker had to dealt with differently for theta z and extra_field.
         # If no theta z measurement keep current theta z.
         if (
             observed_theta_z == NULL_PLACEHOLDER

@@ -24,14 +24,20 @@ ros::Publisher pub_imu_status;
 ros::Publisher pub_dvl_status;
 ros::Publisher pub_depth_status;
 
+double depth;
+
 double RAD_TO_DEG = 180.0 / 3.14159265;
 
 void broad_cast_pose(const geometry_msgs::Pose& msg);
 
+void depth_cb(const std_msgs::Float64::ConstPtr& msg) {
+    depth = msg->data * -1;
+}
+
 void odom_cb(const nav_msgs::Odometry::ConstPtr& msg) {
 
     std_msgs::Float64 z;
-    z.data = msg->pose.pose.position.z;
+    z.data = depth;
     std_msgs::Float64 x;
     x.data = msg->pose.pose.position.x;
     std_msgs::Float64 y;
@@ -44,6 +50,7 @@ void odom_cb(const nav_msgs::Odometry::ConstPtr& msg) {
 
 
     geometry_msgs::Pose pose = msg->pose.pose;
+    pose.position.z = depth;
 
     pub_x.publish(x);
     pub_y.publish(y);
@@ -121,6 +128,7 @@ int main(int argc, char **argv) {
   
 
     ros::Subscriber odom_sub = n.subscribe("/odometry/filtered",100,&odom_cb);
+    ros::Subscriber depth_sub = n.subscribe("/sensors/depth/z",100,&depth_cb);
 
   
 

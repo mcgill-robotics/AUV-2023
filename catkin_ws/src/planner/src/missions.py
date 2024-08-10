@@ -234,6 +234,7 @@ class Missions:
 
         first_state_name = first_state_name + count
         second_state_name = "navigate_octagon" + count
+
         target_success_state_name = (
             mission_after_success if mission_after_success is not None else "success"
         )
@@ -248,7 +249,7 @@ class Missions:
 
         smach.StateMachine.add(
             first_state_name,
-            LinearSearch(
+            InPlaceSearch(
                 self.control, self.mapping, target_class="Octagon Table", min_objects=1
             ),
             transitions={
@@ -257,6 +258,7 @@ class Missions:
                 "failure": "failure",
             },
         )
+
         smach.StateMachine.add(
             second_state_name,
             NavigateOctagon(self.control, self.mapping, self.state),
@@ -325,7 +327,7 @@ class Missions:
             
         smach.StateMachine.add(
             first_state_name,
-            InPlaceSearch(
+            LinearSearch(
                 self.control, self.mapping, target_class="Bin", min_objects=1
             ),
             transitions={

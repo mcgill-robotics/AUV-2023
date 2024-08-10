@@ -4,8 +4,8 @@
 	<param name="update_rate" value="100" />
 	<param name="z_pos_mount_offset" value="0" />
 	<param name="sensor_swap_warning_interval" value="5"/> <!-- secs -->
+	<include file="$(find state_estimation)/launch/hydrophones.launch"/>
 	<group unless="$(arg sim)">
-	
 
 		<param name="auv_dvl_offset_x" value="0.0" />
 		<param name="auv_dvl_offset_y" value="0.0" />
@@ -45,7 +45,6 @@
 
 	<group if="$(arg sim)">
 		<param name="update_state_on_clock" value="true" />
-		<include file="$(find state_estimation)/launch/hydrophones.launch"/>
 		<group if="$(arg ekf)">
 			<include file="$(find state_estimation)/launch/localization.launch">
 				<arg name="remove_gravity" value="false" />

@@ -191,7 +191,7 @@ class FrontCameraImage(Sensor):
         super().__init__("Front Camera Image")
 
         rospy.Subscriber(
-            "/vision/front_cam/color/image_raw", Image, self.front_camera_cb
+            "/zed/zed_node/stereo/image_rect_color", Image, self.front_camera_cb
         )
 
     def front_camera_cb(self, msg):

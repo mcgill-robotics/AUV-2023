@@ -100,6 +100,6 @@ RUN apt-get update && apt-get install -y tmux vim iputils-ping iproute2 ros-noet
 
 SHELL ["/bin/bash", "-c"]
 
-RUN apt-get update && apt-get install -y docker.io
+RUN apt-get update && apt-get install -y docker.io && pip install sklearn
 
 RUN echo "tmux" >> ~/.bashrc

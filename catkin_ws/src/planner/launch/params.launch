@@ -14,6 +14,7 @@
     <param name="gate_width" value="3"/>
     <param name="red_side" value="left"/> <!-- The side of the object that red corresponds to -->
     <param name="num_full_spins" value="2"/>
+    <param name="octagon_closeness_threshold" value="3"/>
     <!-- TIME LIMIT PARAMETERS -->
     <param name="object_search_time_limit" value="180" />
     <param name="navigate_gate_time_limit" value="120" />
@@ -23,4 +24,7 @@
     <param name="navigate_bin_time_limit" value="120" />
     <param name="octagon_time_limit" value="120" />
     <param name="trick_time_limit" value="120" />
+    <!-- CENTER DISTANCE THRESHOLD-->
+    <param name="center_dist_threshold" value="20" />
+    <param name="centering_delta_increment" value="0.1" />
 </launch>

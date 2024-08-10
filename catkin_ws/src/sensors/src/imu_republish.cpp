@@ -24,7 +24,7 @@ void odom_cb(const sensor_msgs::Imu::ConstPtr& msg) {
 
     new_msg.linear_acceleration_covariance[0] = acceleration_variance;
     new_msg.linear_acceleration_covariance[4] = acceleration_variance;
-    new_msg.linear_acceleration_covariance[8] = acceleration_variance * 10;
+    new_msg.linear_acceleration_covariance[8] = 10;
 
     if(new_msg.orientation.w < 0) {
         new_msg.orientation.w *= -1;

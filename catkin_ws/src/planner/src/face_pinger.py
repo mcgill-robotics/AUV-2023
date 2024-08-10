@@ -8,7 +8,6 @@ from substates.utility.functions import *
 
 rospy.init_node("face_pinger")
 print("_______SLEEPING__________")
-countdown(10)
 
 
 pub_mission_display = rospy.Publisher("/mission_display", String, queue_size=1)
@@ -23,12 +22,12 @@ state = StateTracker()
 control = Controller(rospy.Time(0))
 
 while not rospy.is_shutdown():
-
-    pinger_bearings = self.state.pingers_bearing
+    rospy.sleep(1)
+    pinger_bearings = state.pingers_bearing
     if len(pinger_bearings.keys()) > 0:
-        frequency, bearing = pinger_bearings.items()[0]
+        frequency, bearing = list(pinger_bearings.items())[0]
         update_display(str(frequency))
-        self.control.rotateEuler(
+        control.rotateEuler(
             (
                 0,
                 0,

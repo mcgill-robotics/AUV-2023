@@ -5,6 +5,7 @@ from .utility.functions import *
 import threading
 from std_msgs.msg import String
 
+
 class NavigateDropper(smach.State):
     def __init__(self, control, mapping, state):
         super().__init__(outcomes=["success", "failure", "timeout"])
@@ -15,6 +16,8 @@ class NavigateDropper(smach.State):
         self.thread_timer = None
         self.timeout_occurred = False
         self.time_limit = rospy.get_param("navigate_bin_time_limit")
+        self.centering_dist_threshold = rospy.get_param("center_dist_threshold")
+        self.centering_delta_increment = rospy.get_param("centering_delta_increment")
         
         self.pub_mission_display = rospy.Publisher(
             "/mission_display", String, queue_size=1
@@ -46,7 +49,20 @@ class NavigateDropper(smach.State):
         if self.timeout_occurred:
             return "timeout"
         self.control.move((bin_object[1], bin_object[2], rospy.get_param("down_cam_search_depth")), face_destination=True)
-        print("Centered.")
+        # center distance loop
+        while (self.mapping.distance > self.centering_dist_threshold):
+            if self.timeout_occurred:
+                return "timeout"
+            if self.mapping.delta_height < 0:
+                self.control.moveDeltaLocal((self.centering_delta_increment, 0, 0))
+            elif self.mapping.delta_height > 0:
+                self.control.moveDeltaLocal((-self.centering_delta_increment, 0, 0))
+            if self.mapping.delta_width < 0:
+                self.control.moveDeltaLocal((0, self.centering_delta_increment, 0))
+            elif self.mapping.delta_width > 0:
+                self.control.moveDeltaLocal((0, -self.centering_delta_increment, 0))
+            rospy.sleep(3)
+        print("Centered")
         
         # Flatten on top of bin
         if self.timeout_occurred:

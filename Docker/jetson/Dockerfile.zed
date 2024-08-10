@@ -64,8 +64,6 @@ RUN ./ZED_SDK_Tegra_L4T36.3_v4.1.3.zstd.run
 
 USER root
 
-COPY scripts/set_env.bash /set_env.bash
-
 ENV RMW_IMPLEMENTATION rmw_fastrtps_cpp
 
 CMD ["bash", "-c", "tail -f /dev/null"]

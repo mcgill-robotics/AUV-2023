@@ -38,11 +38,7 @@
                                        false, false, false,
                                        false, false, false]</rosparam>
 
-      <param name="imu0_differential" value="false"/>
-      <param name="depth0_differential" value="false"/>
 
-      <param name="twist0_relative" value="false"/>
-      <param name="imu0_relative" value="false"/>
       <param name="depth0_relative" value="false"/>
 
       <param name="imu0_remove_gravitational_acceleration" value="$(arg remove_gravity)"/>
