@@ -19,28 +19,10 @@ rospy.sleep(7)
 rospy.init_node("thrusters_test")
 
 
-def forwards_test(t):
-    print("----------T{}----------".format(t))
-    while not rospy.is_shutdown():
-        print("- spinning at " + str(100 * force_amt) + "% max forwards force for 1s")
-
-        cmd = reset.copy()
-        cmd[t - 1] = force_to_pwm(force_amt * MAX_FWD_FORCE * thruster_mount_dirs[t-1])
-        pub.publish(cmd)
-        rospy.sleep(1.0)
-        pub.publish(reset_cmd)
-
-        print("1. repeat test")
-        print("2. proceed")
-        choice = input()
-        if choice != "1":
-            break
-
-
 def simultaneous_forwards_test():
     while not rospy.is_shutdown():
         print("- spinning at " + str(100 * force_amt) + "% max forwards force for 1s")
-
+        
         cmd = [force_to_pwm(force_amt * MAX_FWD_FORCE)] * 8
         pub.publish(cmd)
         rospy.sleep(1.0)
@@ -52,6 +34,14 @@ def simultaneous_forwards_test():
         if choice != "1":
             break
 
+# just type the thruster you want and it will run
+def optimized_dry_test(t):
+    print("- spinning at " + str(100 * force_amt) + "% max forwards force for 1s")
+    cmd = reset.copy()
+    cmd[t - 1] = force_to_pwm(force_amt * MAX_FWD_FORCE * thruster_mount_dirs[t-1])
+    pub.publish(cmd)
+    rospy.sleep(1.0)
+    pub.publish(reset_cmd)
 
 def reset_thrusters():
     pub.publish(reset_cmd)
@@ -76,32 +66,25 @@ while not rospy.is_shutdown():
     print(
         "refer to images in dry-test/images for labelled diagrams of thrusters on the AUV"
     )
-    print("1. test thrusters one by one")
-    print("2. select thruster to test")
-    print("3. test thrusters simultaneously")
-    print("4. re-arm")
-    print("5. Keyboard control")
-    print("6. exit")
+    print("1. select thruster to test")
+    print("2. test thrusters simultaneously")
+    print("3. re-arm")
+    print("4. Keyboard control")
+    print("5. exit")
     choice = input()
 
     if choice == "1":
-        forwards_test(1)
-        forwards_test(2)
-        forwards_test(3)
-        forwards_test(4)
-        forwards_test(5)
-        forwards_test(6)
-        forwards_test(7)
-        forwards_test(8)
+        while True:
+            choice = int(input("select thruster to test (1-8): "))
+            if 1 <= choice and choice <= 8:
+                optimized_dry_test(choice)
+            else:
+                break
     elif choice == "2":
-        choice = int(input("select thruster to test (1-8): "))
-        if 1 <= choice and choice <= 8:
-            forwards_test(choice)
-    elif choice == "3":
         simultaneous_forwards_test()
-    elif choice == "4":
+    elif choice == "3":
         re_arm()
-    elif choice == "5":
+    elif choice == "4":
         print("NOTE: Uses thrust mapper")
         print(" > WASD for SURGE/SWAY")
         print(" > Q/E for UP/DOWN")

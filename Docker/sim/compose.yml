@@ -3,7 +3,7 @@ services:
     environment:
       - DISPLAY=novnc:0.0 
     volumes:
-      - ../../../AUV-2024:/AUV-2024
+      - ../../../AUV-2025:/AUV-2025
     image: "mcgillrobotics/auv_2024:sim"
     build: .
     command: bash -c "tail -f /dev/null"
