@@ -1,4 +1,4 @@
-services:
+services: 
   douglas:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
@@ -42,7 +42,7 @@ services:
       - UDEV=on
     runtime: nvidia
     network_mode: host
-    command: bash -c "source /opt/ros/humble/setup.bash && source /root/ros2_ws/install/local_setup.bash && ros2 launch zed_wrapper zed_camera.launch.py camera_model:=zed2i"
+    command: bash -c "source /opt/ros/humble/setup.bash && source /root/ros2_ws/install/local_setup.bash"
     deploy:
       resources:
         reservations:

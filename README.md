@@ -2,7 +2,7 @@
 
 *This project is currently under development*
 
-Ahoy! This project contains software intended to run on the custom-built Douglas AUV to compete at RoboSub2024 on behalf of McGill Robotics.
+Ahoy! This project contains software intended to run on the custom-built Douglas AUV to compete at RoboSub2025 on behalf of McGill Robotics.
 
 This project is maintained by the McGill Robotics Club and was developed by its members - students of McGill University. 
 
