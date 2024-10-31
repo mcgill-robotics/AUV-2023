@@ -8,6 +8,21 @@ import numpy as np
 
 RAD_PER_DEG = np.pi / 180.0
 
+def hamilton_product(q1,q2):
+    w1,x1,y1,z1 = q1 #define first rotation
+    w2,x2,y2,z2 = q2 #define second rotation
+
+    w = w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2
+    x = w1 * x2 + x1 * w2 + y1 * z2 - z1 * y2
+    y = w1 * y2 - x1 * z2 + y1 * w2 + z1 * x2
+    z = w1 * z2 + x1 * y2 - y1 * x2 + z1 * w2
+    return [w, x, y, z]
+<<<<<<< HEAD
+#this function will rotate the DVLs orientation 180 degrees about x axis(whcih flips the z axis) 
+=======
+#this function will rotate the DVLs orientation 180 degrees about x axis(whcih flips the z axis)
+>>>>>>> 61285dccfd66a218a7a77c5e39c895ed002d7752
+
 def parse_velocity_report(line):
     tokens = line.split(",")
     vx = float(tokens[1])
@@ -61,10 +76,14 @@ def parse_dead_reckon_report(line, quat_variance):
     report.pose.pose.position.z = z
 
     quaternion = transformations.quaternion_from_euler(roll * RAD_PER_DEG, pitch * RAD_PER_DEG, yaw * RAD_PER_DEG)
-    report.pose.pose.orientation.x = quaternion[0]
-    report.pose.pose.orientation.y = quaternion[1]
-    report.pose.pose.orientation.z = quaternion[2]
-    report.pose.pose.orientation.w = quaternion[3]
+    correction_quat = [0, 1, 0, 0]  #flip about x
+    corrected_quat = hamilton_product(quaternion, correction_quat)
+
+
+    report.pose.pose.orientation.x = corrected_quat[0]
+    report.pose.pose.orientation.y = corrected_quat[1]
+    report.pose.pose.orientation.z = corrected_quat[2]
+    report.pose.pose.orientation.w = corrected_quat[3]
     report.pose.covariance = [0.0] * 36
     for i in range(0,3):
         report.pose.covariance[i * 6 + i] = std

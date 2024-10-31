@@ -2,7 +2,7 @@
 MAX_FWD_FORCE = 4.52 * 9.81
 MAX_BKWD_FORCE = -3.52 * 9.81
 
-thruster_mount_dirs = [1, -1, -1, 1, 1, 0.5, 0.5, 1]
+thruster_mount_dirs = [1, -1, -1, 1, -1, 0.5, -0.5, 1]
 
 def force_to_pwm(force):
     """
