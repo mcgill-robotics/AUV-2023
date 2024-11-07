@@ -42,11 +42,9 @@ services:
       - UDEV=on
     runtime: nvidia
     network_mode: host
-<<<<<<< HEAD
+
     command: bash -c "source /opt/ros/humble/setup.bash && source /root/ros2_ws/install/local_setup.bash 
-=======
-    command: bash -c "source /opt/ros/humble/setup.bash && source /root/ros2_ws/install/local_setup.bash"
->>>>>>> 61285dccfd66a218a7a77c5e39c895ed002d7752
+
     deploy:
       resources:
         reservations:
