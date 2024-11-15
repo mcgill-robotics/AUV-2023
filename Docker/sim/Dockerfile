@@ -1,4 +1,4 @@
-FROM mcgillrobotics/auv_2024:base
+FROM mcgillrobotics/auv_2025:base
 
 RUN pip3 install --no-cache-dir numpy-quaternion ultralytics \
     && pip install --no-cache-dir --upgrade numpy \

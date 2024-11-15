@@ -42,7 +42,7 @@ RUN pip3 install --no-cache-dir numpy-quaternion ultralytics \
     && sudo apt-get clean && rm -rf /var/lib/apt/lists/* \
     && rm -rf /root/.cache/pip \
     && echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc \
-    && echo "source /root/AUV-2024/catkin_ws/devel/setup.bash" >> ~/.bashrc
+    && echo "source /root/AUV-2025/catkin_ws/devel/setup.bash" >> ~/.bashrc
 
 # RUN apt update && apt install  openssh-server  xauth sudo -y \
 #     && useradd -rm -d /home/robotics -s /bin/bash -g root -G sudo -u 1000 robotics \

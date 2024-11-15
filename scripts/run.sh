@@ -10,4 +10,4 @@ fi
 
 cd ../Docker/jetson/
 echo "Starting docker container..."
-OVERRIDE_COMMAND="source /opt/ros/noetic/setup.bash && source /AUV-2024/catkin_ws/devel/setup.bash && roslaunch $PACKAGE $LAUNCH_FILE" docker compose up --d
+OVERRIDE_COMMAND="source /opt/ros/noetic/setup.bash && source /AUV-2025/catkin_ws/devel/setup.bash && roslaunch $PACKAGE $LAUNCH_FILE" docker compose up --d

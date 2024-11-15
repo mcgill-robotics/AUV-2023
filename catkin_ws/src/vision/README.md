@@ -51,7 +51,7 @@ The source code is released under a GPLv3 license.
 ### Building
 
 	source /opt/ros/noetic/setup.bash
-	cd <AUV-2024>/catkin_ws/src
+	cd <AUV-2025>/catkin_ws/src
 	catkin build vision
 
 After build is complete, make the packages visible to ROS

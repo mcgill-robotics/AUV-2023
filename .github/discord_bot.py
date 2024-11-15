@@ -13,7 +13,7 @@ args = parser.parse_args()
 num = int(args.issue_number)
 
 response = requests.get(
-    f"https://api.github.com/repos/mcgill-robotics/AUV-2024/issues/{num}"
+    f"https://api.github.com/repos/mcgill-robotics/AUV-2025/issues/{num}"
 )
 json = response.json()
 title = json["title"]

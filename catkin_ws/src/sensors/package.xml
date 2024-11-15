@@ -11,7 +11,7 @@
 
   <maintainer email="dev@mcgillrobotics.com">McGill Robotics</maintainer>
   <license>GPLv3</license>
-  <url type="respository">https://github.com/mcgill-robotics/AUV-2024</url>
+  <url type="respository">https://github.com/mcgill-robotics/AUV-2025</url>
 
   <buildtool_depend>catkin</buildtool_depend>
 

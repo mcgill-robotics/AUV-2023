@@ -40,4 +40,4 @@ RUN rm -f /usr/local/bin/cmake  \
     && sudo apt-get clean && rm -rf /var/lib/apt/lists/* \
     && rm -rf /root/.cache/pip \
     && echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc \
-    && echo "source /AUV-2024/catkin_ws/devel/setup.bash" >> ~/.bashrc
+    && echo "source /AUV-2025/catkin_ws/devel/setup.bash" >> ~/.bashrc

@@ -4,7 +4,7 @@ services:
       - DISPLAY=novnc:0.0 
     volumes:
       - ../../../AUV-2025:/AUV-2025
-    image: "mcgillrobotics/auv_2024:sim"
+    image: "mcgillrobotics/auv_2025:sim"
     build: .
     command: bash -c "tail -f /dev/null"
     ports:

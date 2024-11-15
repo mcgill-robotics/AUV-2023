@@ -14,4 +14,4 @@ This software is licensed under [GPLv3](LICENSE).
 
 ## Wiki
 
-For more information, access our [Wiki](https://github.com/mcgill-robotics/AUV-2024/wiki)
+For more information, access our [Wiki](https://github.com/mcgill-robotics/AUV-2025/wiki)

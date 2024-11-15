@@ -6,7 +6,7 @@ services:
     volumes:
       - ../../../AUV-2025:/AUV-2025
       - /dev:/dev
-    image: "mcgillrobotics/auv_2024:poolside"
+    image: "mcgillrobotics/auv_2025:poolside"
     privileged: true
     build: .
     command: tail -f /dev/null

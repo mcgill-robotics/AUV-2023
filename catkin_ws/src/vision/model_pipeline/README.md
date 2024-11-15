@@ -3,7 +3,8 @@ If you only want to train an existing dataset and not add any new images to it, 
 1. Collect Image Samples (Sim or Real)
     1. Ideally, you should collect at least ~50 raw images for each class. 
 3. Upload and Label Data
-    1. Go to [Roboflow](https://app.roboflow.com/auv2024) and open the desired project
+    1. Go to [Roboflow](https://app.roboflow.com/auv2024) and open the desired project 
+    #(TODO: change Roboflow name. used to be auv2024)
     2. Ask a lead for the McGill Robotics account information.
     3. Upload your data and label it using bounding boxes.
         1. You can keep the default train/valid/test split suggested by Roboflow.
