@@ -46,7 +46,7 @@ class EffortServer(BaseServer):
         Executes a Effort Goal. Sets the efforts to the goal efforts.
         """
         self.goal_handle_ = goal_handle  # goal handle is a variable sent by the client 
-        print("Effort goal:\n", self.goal_handle_)
+        self.get_logger().info("Effort goal:\n", self.goal_handle_)
         self.unset_pids()
 
         if goal_handle.request.do_surge.data:

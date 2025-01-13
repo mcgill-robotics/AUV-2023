@@ -30,15 +30,15 @@ def main(args=None):
         time.sleep(1)
         pinger_bearings = node.state.pingers_bearings
         if len(pinger_bearings.keys()) > 0:
-        frequency, bearing = list(pinger_bearings.items())[0]
-        node.update_display(str(frequency))
-        node.control.rotateEuler(
-            (
-                0,
-                0,
-                180 + vectorToYawDegrees(bearing.x, bearing.y),
+            frequency, bearing = list(pinger_bearings.items())[0]
+            node.update_display(str(frequency))
+            node.control.rotateEuler(
+                (
+                    0,
+                    0,
+                    180 + vectorToYawDegrees(bearing.x, bearing.y),
+                )
             )
-        )
         else:
             node.update_display("NONE")
 
