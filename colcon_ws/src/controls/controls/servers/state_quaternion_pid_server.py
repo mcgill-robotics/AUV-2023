@@ -71,7 +71,13 @@ class StateQuaternionServer(BaseServer):
         if data.data == False:
             self.previous_goal_quat = None
 
-    def callback(self, goal_handle: ServerGoalHandle):
+    def goal_callback(self, goal_request: EffortAction.Goal):  
+        # abort previous goal when getting new goal
+        if self.goal_handle_ is not None and self.goal_handle_.is_active:
+            self.goal_handle_.abort()
+        return GoalResponse.ACCEPT
+
+    def execute_callback(self, goal_handle: ServerGoalHandle):
         self.get_logger().info("\n\nQuaternion Server got goal:\n", goal_handle)
         self.goal_id += 1
         my_goal = self.goal_id

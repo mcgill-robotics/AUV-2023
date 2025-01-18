@@ -19,13 +19,24 @@ class SimpleClient(Node):
             data_types,
             name_of_server                       
         )
-    
+
     def send_goal(self, goal_to_send):
+        # Wait for server
+        self.move_robot_client_.wait_for_server()
+
+        #Send the goal
+        self.client.send_goal_async(goal_to_send)
+    
+    def send_goal_and_wait(self, goal_to_send):
         # Wait for server
         self.client.wait_for_server()
 
         #Send the goal
-        self.client.send_goal_async(goal_to_send)
+        future = self.client.send_goal_async(goal_to_send)
+
+        # Block until the result is available
+        result = future.result()
+
 
     def cancel_goal(self):
         self.goal_handle_.cancel_goal_async()

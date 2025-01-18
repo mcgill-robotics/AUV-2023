@@ -39,7 +39,12 @@ class EffortServer(BaseServer):
             execute_callback= self.execute_callback,
             callback_group=ReentrantCallbackGroup()
         )
-      
+    
+    def goal_callback(self, goal_request: EffortAction.Goal):  
+        # abort previous goal when getting new goal
+        if self.goal_handle_ is not None and self.goal_handle_.is_active:
+            self.goal_handle_.abort()
+        return GoalResponse.ACCEPT
 
     def execute_callback(self, goal_handle: ServerGoalHandle):
         """
