@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import rclpy
+from rclpy.clock import Clock
 from rclpy.node import Node
 import actionlib
 from geometry_msgs.msg import Pose, Vector3, Vector3Stamped, Wrench
@@ -41,7 +42,7 @@ class Controller(Node):
         super().__init__(node_name_used)
         self.get_logger().info("starting controller")
         self.header_time = header_time
-
+        self.clock = Clock()
         self.x = None
         self.y = None
         self.z = None
@@ -232,11 +233,11 @@ class Controller(Node):
 
         return goal
 
-    # preempt the current action
+    # preempt the current action done in the server
     def preemptCurrentAction(self):
         for client in self.clients:
             if client.get_state() in [GoalStatus.PENDING, GoalStatus.ACTIVE]:
-                client.cancel_goal_async()
+                client.cancel_goal()
 
     # rotate to this rotation (quaternion)
     def rotate(self, ang):
@@ -400,8 +401,8 @@ class Controller(Node):
         self.pub_z_enable.publish(Bool(False))
         self.pub_quat_enable.publish(Bool(False))
 
-        start = rospy.get_time()
-        while rospy.get_time() - start < 5:
+        start = self.clock.now().seconds_nanoseconds()[0]
+        while self.clock.now().seconds_nanoseconds()[0] - start < 5:
             self.pub_surge.publish(0)
             self.pub_sway.publish(0)
             self.pub_heave.publish(0)
