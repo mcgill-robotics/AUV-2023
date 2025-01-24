@@ -26,7 +26,7 @@ RUN apt update \
     && echo "Port 222" >> /etc/ssh/sshd_config \
     && echo "PermitRootLogin yes" >> /etc/ssh/sshd_config \
     && echo 'root:jetson' | chpasswd
-    
+
 # install ros packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-noetic-ros-core=1.5.0-1* \
@@ -41,7 +41,14 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 
 # bootstrap rosdep
 RUN rosdep init && \
-  rosdep update --rosdistro $ROS_DISTRO
+    rosdep update --rosdistro $ROS_DISTRO
+
+#install tf2
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ros-noetic-tf \
+    ros-noetic-tf2-ros \
+    ros-noetic-tf2-tools \
+    && rm -rf /var/lib/apt/lists/*
 
 # install ros packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -70,8 +77,8 @@ RUN apt-get install -y ros-noetic-rosserial-arduino \
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-            libjpeg-dev \
-		  zlib1g-dev \
+    libjpeg-dev \
+    zlib1g-dev \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
@@ -100,6 +107,6 @@ RUN apt-get update && apt-get install -y tmux vim iputils-ping iproute2 ros-noet
 
 SHELL ["/bin/bash", "-c"]
 
-RUN apt-get update && apt-get install -y docker.io && pip install sklearn
+RUN apt-get update && apt-get install -y docker.io && pip install scikit-learn 
 
 RUN echo "tmux" >> ~/.bashrc
