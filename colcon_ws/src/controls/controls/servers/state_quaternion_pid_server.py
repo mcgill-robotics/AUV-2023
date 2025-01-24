@@ -2,6 +2,8 @@
 
 
 import rclpy
+from rclpy import Duration
+from rclpy.clock import Clock
 from rclpy.node import Node
 from rclpy.action import ActionServer
 from rclpy.action.server import ServerGoalHandle
@@ -39,6 +41,7 @@ class StateQuaternionServer(BaseServer):
         self.previous_goal_y = None
         self.previous_goal_z = None
         self.goal_id = 0
+        self.clock = Clock()
 
         self.enable_quat_sub = rclpy.create_subscription(
             Bool, "/controls/pid/quat/enable", self.quat_enable_cb
@@ -188,7 +191,7 @@ class StateQuaternionServer(BaseServer):
                 and my_goal == self.goal_id
                 and rclpy.ok()
             ):
-                start = self.get_glock().now()
+                start = self.clock().now()
                 while (
                     not self.cancelled
                     and my_goal == self.goal_id
@@ -203,11 +206,11 @@ class StateQuaternionServer(BaseServer):
                     and rclpy.ok()
                 ):
 
-                    if self.get_glock().now() - start > time_to_settle:
+                    if self.clock().now() - start > time_to_settle:
                         settled = True
                         self.get_logger().info("settled")
                         break
-                    self.create_timer(settle_check_loop_time).sleep()
+                    self.get_clock().sleep_for(Duration(seconds=5))
                     
         else:
             self.get_logger().info("FAILURE, STATE SERVER DOES NOT HAVE A POSE")
