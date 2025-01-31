@@ -1,35 +1,35 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>auv_msgs</name>
-  <version>0.1.0</version>
-  <description>Custom messages for AUV</description>
-  <maintainer email="dev@mcgillrobotics.com">McGill Robotics</maintainer>
-  <license>GPLv3</license>
-  <url type="repository">https://github.com/mcgill-robotics/AUV-2025</url>
+    <name>auv_msgs</name>
+    <version>0.1.0</version>
+    <description>Custom messages for AUV</description>
+    <maintainer email="dev@mcgillrobotics.com">McGill Robotics</maintainer>
+    <license>GPLv3</license>
+    <url type="repository">https://github.com/mcgill-robotics/AUV-2025</url>
 
-  <buildtool_depend>colcon</buildtool_depend>
+    <buildtool_depend>colcon</buildtool_depend>
 
-  <!-- Migration Dependencies -->
-  <buildtool_depend>rosidl_default_generators</buildtool_depend>
+    <!-- Migration Dependencies -->
+    <buildtool_depend>rosidl_default_generators</buildtool_depend>
 
-  <exec_depend>rosidl_default_runtime</exec_depend>
+    <exec_depend>rosidl_default_runtime</exec_depend>
 
-  <member_of_group>rosidl_interface_packages</member_of_group>
-  <depend>std_msgs</depend>
-  <depend>geometry_msgs</depend>
+    <member_of_group>rosidl_interface_packages</member_of_group>
+    <depend>std_msgs</depend>
+    <depend>geometry_msgs</depend>
 
-  <build_depend>geometry_msgs</build_depend>
-  <build_depend>message_generation</build_depend>
-  <build_depend>std_msgs</build_depend>
+    <build_depend>geometry_msgs</build_depend>
+    <build_depend>message_generation</build_depend>
+    <build_depend>std_msgs</build_depend>
 
-  <exec_depend>geometry_msgs</exec_depend>
-  <exec_depend>message_runtime</exec_depend>
-  <exec_depend>std_msgs</exec_depend>
+    <exec_depend>geometry_msgs</exec_depend>
+    <exec_depend>message_runtime</exec_depend>
+    <exec_depend>std_msgs</exec_depend>
 
-  <!-- rclcpp dependencies -->
-  <buildtool_depend>ament_cmake_ros</buildtool_depend>
-  <depend>rclcpp</depend>
-  <export>
-    <build_type>ament_cmake</build_type>
+    <!-- rclcpp dependencies -->
+    <buildtool_depend>ament_cmake_ros</buildtool_depend>
+    <depend>rclcpp</depend>
+    <export>
+        <build_type>ament_cmake</build_type>
     </export>
 </package>
