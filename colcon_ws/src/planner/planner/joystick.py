@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 import rclpy
+from rclpy.node import Node
+from rclpy.clock import Clock
+from rclpy import Duration
 from substates.utility.controller import Controller
 from auv_msgs.msg import ThrusterMicroseconds
 from std_msgs.msg import Float64
@@ -15,7 +18,8 @@ class JoyStick(Node):
     def __init__(self):
         super().__init__('joystick')
         self.reset_cmd = ThrusterMicroseconds([1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500])
-        time.sleep(7)
+        self.get_clock().sleep_for(Duration(seconds=7))
+
         self.x_pub = self.create_publisher("/controls/force/surge", Float64, queue_size=1)
         self.y_pub = self.create_publisher("/controls/force/sway", Float64, queue_size=1)
         self.z_pub = self.create_publisher("/controls/force/global/z", Float64, queue_size=1)
@@ -31,7 +35,7 @@ class JoyStick(Node):
         self.get_logger().info("Safely shutting down thrusters")
 
     def record_keyboard_state(self):
-        global self.RECORDING
+        
         keyboard_state = []
         if keyboard.is_pressed("space"):
             keyboard_state.append("space")
@@ -69,7 +73,7 @@ class JoyStick(Node):
             keyboard_state.append("t")
         RECORDING.append(keyboard_state)
 
-    def joystick(keyboard_state=None):
+    def joystick(self, keyboard_state=None):
         desired_x_force = 0
         desired_y_force = 0
         desired_z_force = 0
@@ -137,7 +141,7 @@ class JoyStick(Node):
 
         return True
     
-    def run_recording():
+    def run_recording(self):
         is_recording_res = input("Recording?")
         is_recording = is_recording_res.lower() == "y"
         self.get_logger().info("SUBMERGING...")
@@ -161,18 +165,18 @@ class JoyStick(Node):
         if is_recording:
             while rclpy.ok():
                 stay_alive = self.joystick()
-                time.sleep(0.01)
+                self.get_clock().sleep_for(Duration(seconds=0.01))
                 if not stay_alive:
                     break
             with open("keyboard_rec.pkl", "wb") as f:
-                print("SAVING")
+                self.node.get_logger().info("SAVING")
                 pickle.dump(RECORDING, f) 
         else:
             with open("keyboard_rec.pkl", "rb") as f:
                 RECORDING = pickle.load(f)
             for keyboard_state in RECORDING:
                 self.joystick(keyboard_state)
-                time.sleep(0.01)
+                self.get_clock().sleep_for(Duration(seconds=0.01))
 
         self.controls.kill()
 

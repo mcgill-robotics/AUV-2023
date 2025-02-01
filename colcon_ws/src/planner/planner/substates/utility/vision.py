@@ -1,20 +1,22 @@
 #!/usr/bin/env python3
 
-import rclpy
+import self
+from self.node import Node
 import math
 from auv_msgs.msg import VisionObjectArray
 from std_msgs.msg import Int32MultiArray
 
 
-class ObjectMapper:
-    def __init__(self):
+class ObjectMapper(Node):
+    def __init__(self, node_name_used):
+        super().__init__(node_name_used)
         # replace with map subscriber in future
         self.map = []
-        self.obj_sub = rclpy.create_subscription(
+        self.obj_sub = self.create_subscription(
             VisionObjectArray, "vision/object_map", self.mapUpdateCb
         )
-        self.NULL_PLACEHOLDER = rclpy.get_param("NULL_PLACEHOLDER")
-        rclpy.create_subscription(Int32MultiArray, "/vision/down_cam/bbox", self.callback_object_detection)
+        self.NULL_PLACEHOLDER = self.get_parameter("NULL_PLACEHOLDER").get_parameter_value()
+        self.create_subscription(Int32MultiArray, "/vision/down_cam/bbox", self.callback_object_detection)
 
         self.delta_height = 1000
         self.delta_width = 1000

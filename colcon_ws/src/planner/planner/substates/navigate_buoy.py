@@ -1,4 +1,5 @@
-import rospy
+import rclpy
+from rclpy import Duration
 import smach
 from .utility.functions import *
 import numpy as np
@@ -8,22 +9,23 @@ from std_msgs.msg import String
 
 
 class NavigateBuoy(smach.State):
-    def __init__(self, control, mapping, state):
+    def __init__(self, control, mapping, state, node):
         super().__init__(outcomes=["success", "failure", "timeout"])
         self.control = control
         self.mapping = mapping
         self.state = state
+        self.node = node
         
-        self.color = rospy.get_param("target_color")
-        self.radius = rospy.get_param("buoy_circumnavigation_radius")
-        self.offset_distance = rospy.get_param("buoy_centering_offset_distance")
+        self.color = self.node.get_parameter("target_color").get_parameter_value()
+        self.radius = self.node.get_parameter("buoy_circumnavigation_radius").get_parameter_value()
+        self.offset_distance = self.node.get_parameter("buoy_centering_offset_distance").get_parameter_value()
         
         self.thread_timer = None
         self.timeout_occurred = False
-        self.time_limit = rospy.get_param("navigate_buoy_time_limit")
+        self.time_limit = self.node.get_parameter("navigate_buoy_time_limit").get_parameter_value()
         
-        self.pub_mission_display = rospy.Publisher(
-            "/mission_display", String, queue_size=1
+        self.pub_mission_display = self.node.create_publisher(
+             String, "/mission_display", 1
         )
 
     def timer_thread_func(self):
@@ -32,7 +34,7 @@ class NavigateBuoy(smach.State):
         self.control.freeze_pose()
 
     def execute(self, ud):
-        print("Starting navigate buoy.")
+        self.node.get_logger().info("Starting navigate buoy.")
         self.pub_mission_display.publish("Buoy")
 
         # Start the timer in a separate thread.
@@ -40,17 +42,17 @@ class NavigateBuoy(smach.State):
         self.thread_timer.start()
 
         # Move to the middle of the pool depth and flat orientationt.
-        self.control.move((None, None, rospy.get_param("nominal_depth")))
+        self.control.move((None, None, self.node.get_parameter("nominal_depth").get_parameter_value()))
         self.control.flatten()
 
         buoy_object = self.mapping.getClosestObject(
             cls="Buoy", pos=(self.state.x, self.state.y)
         )
         if buoy_object is None:
-            print("No buoy in object map! Failed.")
+            self.node.get_logger().info("No buoy in object map! Failed.")
             return "failure"
 
-        print("Centering and rotating in front of buoy.")
+        self.node.get_logger().info("Centering and rotating in front of buoy.")
 
         if self.timeout_occurred:
             return "timeout"
@@ -88,14 +90,14 @@ class NavigateBuoy(smach.State):
         new_position = np.array(
             [position_buoy[0], position_buoy[1], position_buoy[2]]
         ) - np.array([vector_auv_buoy[0], vector_auv_buoy[1], vector_auv_buoy[2]])
-        print("Moving to new position: ", new_position)
+        self.node.get_logger().info("Moving to new position: ", new_position)
         if self.timeout_occurred:
             return "timeout"
         self.control.move((new_position[0], new_position[1], new_position[2]))
 
         # wait and keep measuring just to be safe
-        print("Waiting to improve measurement accuracy")
-        rospy.sleep(rospy.get_param("object_observation_time"))
+        self.node.get_logger().info("Waiting to improve measurement accuracy")
+        self.node.get_clock().sleep_for(Duration(seconds= int(self.node.get_parameter("object_observation_time").get_parameter_value())))
 
         if self.timeout_occurred:
             return "timeout"
@@ -133,7 +135,7 @@ class NavigateBuoy(smach.State):
         new_position = np.array(
             [position_buoy[0], position_buoy[1], position_buoy[2]]
         ) - np.array([vector_auv_buoy[0], vector_auv_buoy[1], vector_auv_buoy[2]])
-        print("Moving to new position: ", new_position)
+        self.node.get_logger().info("Moving to new position: ", new_position)
         if self.timeout_occurred:
             return "timeout"
         self.control.move((new_position[0], new_position[1], new_position[2]))
@@ -182,5 +184,5 @@ class NavigateBuoy(smach.State):
 
         self.control.freeze_pose()
         self.thread_timer.cancel()
-        print("Successfully completed buoy task!")
+        self.node.get_logger().info("Successfully completed buoy task!")
         return "success"

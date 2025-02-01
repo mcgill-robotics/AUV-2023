@@ -20,13 +20,13 @@ class BreadthFirstSearch(smach.State):
         self.detectedObject = False
         self.target_class = target_class
         self.min_objects = min_objects
-        self.expansionAmt = rclpy.get_param("bfs_expansion_size")
+        self.expansionAmt = self.node.get_parameter("bfs_expansion_size").get_parameter_value()
         
         self.thread_timer = None
         self.timeout_occurred = False
-        self.time_limit = rclpy.get_param("object_search_time_limit")
+        self.time_limit = self.node.get_parameter("object_search_time_limit").get_parameter_value()
 
-        self.pub_mission_display = rclpy.create_publisher(
+        self.pub_mission_display = self.node.create_publisher(
             String, "/mission_display", 1
         )
 
@@ -59,7 +59,7 @@ class BreadthFirstSearch(smach.State):
         self.thread_timer.start()
 
         # Move to the middle of the pool depth and flat orientationt.
-        self.control.move((None, None, rclpy.get_param("nominal_depth")))
+        self.control.move((None, None, self.node.get_parameter("nominal_depth").get_parameter_value()))
         self.control.flatten()
 
         self.searchThread = threading.Thread(target=self.do_breadth_first_search)
@@ -78,7 +78,7 @@ class BreadthFirstSearch(smach.State):
                 self.searchThread.join()
                 self.control.freeze_pose()
                 self.node.get_logger().info("Found object! Waiting to get more observations of object.")
-                self.node.get_clock().sleep_for(Duration(seconds=int(rclpy.get_param("object_observation_time"))))
+                self.node.get_clock().sleep_for(Duration(seconds=int(self.node.get_parameter("object_observation_time").get_parameter_value())))
                 
                 return "success"
 

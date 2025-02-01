@@ -1,21 +1,22 @@
 #!/usr/bin/env python3
 
-import rospy
+import rclpy
 import smach
 import threading
 from std_msgs.msg import String
 
 class Trick(smach.State):
-    def __init__(self, control):
+    def __init__(self, control, node):
         super().__init__(outcomes=["success", "failure", "timeout"])
+        self.node = node
         self.control = control
-        self.num_full_spins = rospy.get_param("num_full_spins")
+        self.num_full_spins = self.node.get_parameter("num_full_spins").get_parameter_value()
 
         self.thread_timer = None
         self.timeout_occurred = False
-        self.time_limit = rospy.get_param("trick_time_limit")
+        self.time_limit = self.node.get_parameter("trick_time_limit").get_parameter_value()
 
-        self.pub_mission_display = rospy.Publisher("/mission_display", String, queue_size=1)
+        self.pub_mission_display = self.node.Publisher("/mission_display", String, queue_size=1)
 
     def timer_thread_func(self):
         self.pub_mission_display.publish("Gate Time-out")
@@ -23,7 +24,7 @@ class Trick(smach.State):
         self.control.freeze_pose()
 
     def execute(self,ud):
-        print("Starting tricks...")
+        self.node.get_logger().info("Starting tricks...")
         self.pub_mission_display.publish("Trick") 
 
         # Start the timer in a separate thread.
@@ -38,10 +39,10 @@ class Trick(smach.State):
             if self.timeout_occurred:
                 return "timeout"
             self.control.rotateDeltaEuler((120.0, 0, 0))
-        print("Completed")
+        self.node.get_logger().info("Completed")
 
         #re-stabilize
-        print("Stabilizing...")
+        self.node.get_logger().info("Stabilizing...")
         self.control.flatten()
         
         return "success"

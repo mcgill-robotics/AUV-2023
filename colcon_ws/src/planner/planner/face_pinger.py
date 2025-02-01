@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import rclpy
 from rclpy.node import Node
+from rclpy import Duration
+from rclpy.clock import Clock
 from substates.utility.functions import countdown
 from substates.utility.controller import *
 from substates.utility.state import *
@@ -13,7 +15,7 @@ class FacePinger(Node):
         super().__init__('face_pinger')
         self.pub_mission_display = self.create_publisher("/mission_display", String, queue_size=1)
         self.state = StateTracker()
-        self.control = Controller(rclpy.time.Time())
+        self.control = Controller(Clock().now().seconds_nanoseconds()[0])
 
     def update_display(self, status):
         self.pub_mission_display.publish(status)
@@ -27,7 +29,7 @@ def main(args=None):
     node.get_logger().info("_______SLEEPING__________")
 
     while rclpy.ok():
-        time.sleep(1)
+        node.get_clock().sleep_for(Duration(seconds=1))
         pinger_bearings = node.state.pingers_bearings
         if len(pinger_bearings.keys()) > 0:
             frequency, bearing = list(pinger_bearings.items())[0]

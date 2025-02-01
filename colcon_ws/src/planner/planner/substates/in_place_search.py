@@ -21,11 +21,11 @@ class InPlaceSearch(smach.State):
         
         self.thread_timer = None
         self.timeout_occurred = False
-        self.TIME_LIMIT = rclpy.get_param("object_search_time_limit")
-        self.NOMINAL_DEPTH = rclpy.get_param("nominal_depth")
-        self.ROTATION_INCREMENT = rclpy.get_param("in_place_search_rotation_increment")
+        self.TIME_LIMIT = self.node.get_parameter("object_search_time_limit").get_parameter_value()
+        self.NOMINAL_DEPTH = self.node.get_parameter("nominal_depth").get_parameter_value()
+        self.ROTATION_INCREMENT = self.node.get_parameter("in_place_search_rotation_increment").get_parameter_value()
         
-        self.pub_mission_display = rclpy.create_publisher(
+        self.pub_mission_display = self.node.create_publisher(
             String, "/mission_display", 1
         )
 
@@ -89,7 +89,7 @@ class InPlaceSearch(smach.State):
                 self.searchThread.join()
                 self.control.freeze_pose()
                 self.node.get_logger().info("Found object! Waiting to get more observations of object.")
-                self.node.get_clock().sleep_for(Duration(seconds=int(rclpy.get_param("object_observation_time"))))
+                self.node.get_clock().sleep_for(Duration(seconds=int(self.node.get_parameter("object_observation_time").get_parameter_value())))
         
                 return "success"
             

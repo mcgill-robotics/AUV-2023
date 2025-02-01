@@ -1,26 +1,28 @@
 #!/usr/bin/env python3
 import smach
-import rospy
+import rclpy
+from rclpy import Duration
 import threading
 from std_msgs.msg import String
 
 
 class NavigateOctagon(smach.State):
-    def __init__(self, control, mapping, state):
+    def __init__(self, control, mapping, state, node):
         super().__init__(outcomes=["success", "failure", "timeout"])
         self.control = control
         self.mapping = mapping
         self.state = state
+        self.node = node
 
         self.thread_timer = None
         self.timeout_occurred = False
-        self.time_limit = rospy.get_param("octagon_time_limit")
-        self.closeness_threshold = rospy.get_param("octagon_closeness_threshold")
-        self.centering_dist_threshold = rospy.get_param("center_dist_threshold")
-        self.centering_delta_increment = rospy.get_param("centering_delta_increment")
+        self.time_limit = self.node.get_parameter("octagon_time_limit").get_parameter_value()
+        self.closeness_threshold = self.node.get_parameter("octagon_closeness_threshold").get_parameter_value()
+        self.centering_dist_threshold = self.node.get_parameter("center_dist_threshold").get_parameter_value()
+        self.centering_delta_increment = self.node.get_parameter("centering_delta_increment").get_parameter_value()
 
-        self.pub_mission_display = rospy.Publisher(
-            "/mission_display", String, queue_size=1
+        self.pub_mission_display = self.node.create_publisher(
+            String, "/mission_display", 1
         )
     
     def timer_thread_func(self):
@@ -33,7 +35,7 @@ class NavigateOctagon(smach.State):
         return distance < threshold
     
     def execute(self, ud):
-        print("Starting octagon navigation.")
+        self.node.get_logger().info("Starting octagon navigation.")
         self.pub_mission_display.publish("Octagon")
 
         # Start the timer in a separate thread.
@@ -47,22 +49,22 @@ class NavigateOctagon(smach.State):
             octagon_obj = self.mapping.getClosestObject((self.state.x, self.state.y), cls="Octagon Table")
             
             if octagon_obj is None: #TODO: better way to handle this?
-                print("No octagon in object map! Failed.")
+                self.node.get_logger().info("No octagon in object map! Failed.")
                 return "failure"
             
-            print("Moving towards the center of the octagon.") if not started else None
+            self.node.get_logger().info("Moving towards the center of the octagon.") if not started else None
             started = True
 
             self.control.move(
-                (octagon_obj[1], octagon_obj[2], rospy.get_param("down_cam_search_depth")),
+                (octagon_obj[1], octagon_obj[2], self.node.get_parameter("down_cam_search_depth").get_parameter_value()),
                 face_destination=True,
             )
 
             #If close enough to the octagon that we estimate vision can accurately localize it, break
             if self.is_close((self.state.x, self.state.y), (octagon_obj[1], octagon_obj[2]), self.closeness_threshold):
-                rospy.sleep(5)
+                self.node.get_clock().sleep_for(Duration(seconds=5))    
                 self.control.move(
-                (octagon_obj[1], octagon_obj[2], rospy.get_param("down_cam_search_depth")),
+                (octagon_obj[1], octagon_obj[2], self.node.get_parameter("down_cam_search_depth").get_parameter_value()),
                 face_destination=True,
                 )
                 # center distance loop
@@ -77,16 +79,16 @@ class NavigateOctagon(smach.State):
                         self.control.moveDeltaLocal((0, self.centering_delta_increment, 0))
                     elif self.mapping.delta_width > 0:
                         self.control.moveDeltaLocal((0, -self.centering_delta_increment, 0))
-                    rospy.sleep(3)
-                print("Centered")
-                print("Surfacing.")
+                    self.node.get_clock().sleep_for(Duration(seconds=3))
+                self.node.get_logger().info("Centered")
+                self.node.get_logger().info("Surfacing.")
                 self.control.flatten()
                 self.control.kill()
                 break
         else:
             return "timeout"
 
-        print("Successfully navigated the octagon.")
+        self.node.get_logger().info("Successfully navigated the octagon.")
         return "success"
     
 
