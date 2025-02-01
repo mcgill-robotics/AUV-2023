@@ -48,3 +48,6 @@ def main(args=None):
     controls.moveDeltaLocal([START2OCT_Y, 0, 0])
 
     controls.kill()
+
+if __name__ == "__name__":
+    main()
