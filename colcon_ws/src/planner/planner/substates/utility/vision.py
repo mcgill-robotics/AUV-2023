@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import self
-from self.node import Node
+import rclpy
+from rclpy.node import Node
 import math
 from auv_msgs.msg import VisionObjectArray
 from std_msgs.msg import Int32MultiArray
