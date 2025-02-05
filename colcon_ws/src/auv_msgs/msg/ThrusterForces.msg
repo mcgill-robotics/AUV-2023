@@ -1,9 +1,12 @@
 # force with which to spin each thruster (N)
-float64 BACK_LEFT
-float64 HEAVE_BACK_LEFT
-float64 HEAVE_FRONT_LEFT
-float64 FRONT_LEFT
-float64 FRONT_RIGHT
-float64 HEAVE_FRONT_RIGHT
-float64 HEAVE_BACK_RIGHT
-float64 BACK_RIGHT
+float64 front_left
+float64 back_left
+
+float64 heave_back_left
+float64 heave_front_left
+
+float64 front_right
+float64 heave_front_right
+
+float64 back_right
+float64 heave_back_right

@@ -19,3 +19,4 @@ RUN printenv | grep -i ROS
 
 # Sources config files on terminal bootup by adding to .bashrc
 RUN echo "source ../opt/ros/humble/setup.bash" >> ~/.bashrc
+RUN echo "source ../ros_entrypoint.sh" >> ~/.bashrc

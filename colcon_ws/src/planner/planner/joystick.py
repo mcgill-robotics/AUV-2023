@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
-import rclpy
-from substates.utility.controller import Controller
-from auv_msgs.msg import ThrusterMicroseconds
-from std_msgs.msg import Float64
 import keyboard
 import pickle
 import time
+
+from substates.utility.controller import Controller
+from auv_msgs.msg import ThrusterMicroseconds
+from std_msgs.msg import Float64
+
+import rclpy
+from rclpy.node import Node
 
 # forces produced by T200 thruster at 14V (N)
 MAX_FWD_FORCE = 4.52 * 9.81
@@ -31,7 +34,6 @@ class JoyStick(Node):
         self.get_logger().info("Safely shutting down thrusters")
 
     def record_keyboard_state(self):
-        global self.RECORDING
         keyboard_state = []
         if keyboard.is_pressed("space"):
             keyboard_state.append("space")
@@ -67,9 +69,23 @@ class JoyStick(Node):
             keyboard_state.append("r")
         if keyboard.is_pressed("t"):
             keyboard_state.append("t")
-        RECORDING.append(keyboard_state)
+        
+        self.RECORDING.append(keyboard_state)
 
-    def joystick(keyboard_state=None):
+    def joystick(self, keyboard_state=None):
+        """
+        Detects keyboard key presses and react by publishing the PWM force variables.
+
+        Note: **Esc** kills controls, and should be used with caution.
+
+        Refer to the wiki for more documentation.
+
+        Arguments:
+            keyboard_state: State of the keyboard
+
+        Returns:    
+            boolean
+        """
         desired_x_force = 0
         desired_y_force = 0
         desired_z_force = 0
@@ -78,12 +94,13 @@ class JoyStick(Node):
         desired_z_torque = 0        
 
         if keyboard_state is None:
-            record_keyboard_state()
+            self.record_keyboard_state()
             keyboard_state = []
 
         space_pressed = keyboard.is_pressed("space") or "space" in keyboard_state
         current_force_amt = 0.5 if space_pressed else 0.1
 
+        # Detect various key presses on the keyboard
         if keyboard.is_pressed("esc"):
             self.controls.kill()
             return False
@@ -137,7 +154,7 @@ class JoyStick(Node):
 
         return True
     
-    def run_recording():
+    def run_recording(self):
         is_recording_res = input("Recording?")
         is_recording = is_recording_res.lower() == "y"
         self.get_logger().info("SUBMERGING...")

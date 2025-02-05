@@ -16,7 +16,7 @@ set(MSG_DEP_SET
 #	actionlib_msgs
 )
 
-set(msg_files
+set(msg_files	
 	"msg/DeadReckonReport.msg"
 	"msg/PingerBearing.msg"
 	"msg/PingerTimeDifference.msg"
@@ -34,6 +34,8 @@ set(action_files
 )
 
 find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(geometry_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 foreach(dep IN LISTS MSG_DEP_SET)
 	find_package(${dep} REQUIRED)

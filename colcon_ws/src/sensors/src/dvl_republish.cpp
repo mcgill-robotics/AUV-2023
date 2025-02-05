@@ -1,9 +1,11 @@
-#include <rclcpp/rclcpp.hpp>
 #include <sstream>
+#include <iostream>
+
 #include <std_msgs/msg/float64.hpp>
 #include <geometry_msgs/msg/vector3.hpp>
-#include <iostream>
 #include <geometry_msgs/msg/pose_with_covariance_stamped.hpp>
+
+#include <rclcpp/rclcpp.hpp>
 
 
 class DVLRepublishNode : public rclcpp::Node {
@@ -13,10 +15,10 @@ public:
         this->get_parameter("~variance", variance);
 
         odom_sub = this->create_subscription<geometry_msgs::msg::PoseWithCovarianceStamped>(
-            "/sensors/dvl/raw", 100, std::bind(&DVLRepublishNode::odom_cb, this, std::placeholders:_1)
+            "/sensors/dvl/raw", 100, std::bind(&DVLRepublishNode::odom_cb, this, std::placeholders::_1)
             );
 
-        public_dvl = this->create_publisher<geometry_msgs::msg::PoseWithCovarianceStamped>("/sensors/dvl/pose", 1);
+        pub_dvl = this->create_publisher<geometry_msgs::msg::PoseWithCovarianceStamped>("/sensors/dvl/pose", 1);
 
     }
 private:
@@ -33,9 +35,9 @@ private:
     rclcpp::Subscription<geometry_msgs::msg::PoseWithCovarianceStamped>::SharedPtr odom_sub;
     float variance;
 
-}
+};
 
-int main(int argc, chae **argv) {
+int main(int argc, char **argv) {
     rclcpp::init(argc, argv);
 
     auto node = std::make_shared<DVLRepublishNode>();

@@ -11,7 +11,7 @@ import time
 class FacePinger(Node):
     def __init__(self):
         super().__init__('face_pinger')
-        self.pub_mission_display = self.create_publisher("/mission_display", String, queue_size=1)
+        self.pub_mission_display = self.create_publisher(String, "/mission_display", 1)
         self.state = StateTracker()
         self.control = Controller(rclpy.time.Time())
 
@@ -30,15 +30,15 @@ def main(args=None):
         time.sleep(1)
         pinger_bearings = node.state.pingers_bearings
         if len(pinger_bearings.keys()) > 0:
-        frequency, bearing = list(pinger_bearings.items())[0]
-        node.update_display(str(frequency))
-        node.control.rotateEuler(
-            (
-                0,
-                0,
-                180 + vectorToYawDegrees(bearing.x, bearing.y),
+            frequency, bearing = list(pinger_bearings.items())[0]
+            node.update_display(str(frequency))
+            node.control.rotateEuler(
+                (
+                    0,
+                    0,
+                    180 + vectorToYawDegrees(bearing.x, bearing.y),
+                )
             )
-        )
         else:
             node.update_display("NONE")
 

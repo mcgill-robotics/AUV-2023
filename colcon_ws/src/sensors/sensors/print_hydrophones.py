@@ -17,9 +17,8 @@ class HydrophonePrinter(Node):
         if msg.frequency != 0:
             print(msg)
         
-
 def main():
-    rospy.init_node('hydrophone_printer')
+    rclpy.init_node('hydrophone_printer')
     hydrophone_printer = HydrophonePrinter()
     rclpy.spin(hydrophone_printer)
 

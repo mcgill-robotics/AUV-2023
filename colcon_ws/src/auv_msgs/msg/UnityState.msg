@@ -9,7 +9,7 @@ uint32[] times_pinger_2
 uint32[] times_pinger_3
 uint32[] times_pinger_4
 
-int32 isDVLActive
-int32 isDepthSensorActive
-int32 isIMUActive
-int32 isHydrophonesActive
+int32 is_dvl_active
+int32 is_depth_sensor_active
+int32 is_imu_active
+int32 is_hydrophones_active
