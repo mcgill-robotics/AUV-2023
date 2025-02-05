@@ -1,6 +1,15 @@
 #!/usr/bin/env python3
 
-import rospy
+
+import rclpy
+from rclpy import Duration
+from rclpy.clock import Clock
+from rclpy.node import Node
+from rclpy.action import ActionServer
+from rclpy.action.server import ServerGoalHandle
+from rclpy.action.server import GoalResponse, CancelResponse
+from rclpy.executors import MultiThreadedExecutor
+from rclpy.callback_groups import ReentrantCallbackGroup
 from servers.base_server import BaseServer
 from std_msgs.msg import Bool
 import actionlib
@@ -11,34 +20,43 @@ import quaternion
 
 
 class StateQuaternionServer(BaseServer):
-    def __init__(self):
-        super().__init__()
-        self.server = actionlib.SimpleActionServer(
+    def __init__(self, node_name_used):
+        super().__init__(node_name_used)
+        self.goal_handle_ : ServerGoalHandle = None #initializing a goal handle that can be used later
+
+        self.server = ActionServer(
+            self,
+            StateQuaternionAction,
             "/controls/server/state",
             StateQuaternionAction,
             execute_cb=self.callback,
-            auto_start=False,
+            goal_callback = self.goal_callback,
+            cancel_callback=self.cancel_callback,
+            execute_callback= self.execute_callback,
+            callback_group=ReentrantCallbackGroup()
         )
+
         self.previous_goal_quat = None
         self.previous_goal_x = None
         self.previous_goal_y = None
         self.previous_goal_z = None
         self.goal_id = 0
+        self.clock = Clock()
 
-        self.enable_quat_sub = rospy.Subscriber(
-            "/controls/pid/quat/enable", Bool, self.quat_enable_cb
+        self.enable_quat_sub = rclpy.create_subscription(
+            Bool, "/controls/pid/quat/enable", self.quat_enable_cb
         )
-        self.enable_x_sub = rospy.Subscriber(
-            "/controls/pid/x/enable", Bool, self.x_enable_cb
+        self.enable_x_sub = rclpy.create_subscription(
+            Bool, "/controls/pid/x/enable", self.x_enable_cb
         )
-        self.enable_y_sub = rospy.Subscriber(
-            "/controls/pid/y/enable", Bool, self.y_enable_cb
+        self.enable_y_sub = rclpy.create_subscription(
+            Bool, "/controls/pid/y/enable", self.y_enable_cb
         )
-        self.enable_z_sub = rospy.Subscriber(
-            "/controls/pid/z/enable", Bool, self.z_enable_cb
+        self.enable_z_sub = rclpy.create_subscription(
+            Bool, "/controls/pid/z/enable", self.z_enable_cb
         )
 
-        self.server.start()
+        
 
     def x_enable_cb(self, data):
         if data.data == False:
@@ -56,12 +74,18 @@ class StateQuaternionServer(BaseServer):
         if data.data == False:
             self.previous_goal_quat = None
 
-    def callback(self, goal):
-        print("\n\nQuaternion Server got goal:\n", goal)
+    def goal_callback(self, goal_request: EffortAction.Goal):  
+        # abort previous goal when getting new goal
+        if self.goal_handle_ is not None and self.goal_handle_.is_active:
+            self.goal_handle_.abort()
+        return GoalResponse.ACCEPT
+
+    def execute_callback(self, goal_handle: ServerGoalHandle):
+        self.get_logger().info("\n\nQuaternion Server got goal:\n", goal_handle)
         self.goal_id += 1
         my_goal = self.goal_id
         self.cancelled = False
-        self.goal = goal
+        self.goal = goal_handle
         if self.pose is not None:
             goal_position = [
                 self.goal.pose.position.x,
@@ -115,11 +139,11 @@ class StateQuaternionServer(BaseServer):
                 self.pub_z_enable.publish(Bool(True))
 
                 safe_goal = max(
-                    min(goal_position[2], rospy.get_param("max_safe_goal_depth")),
-                    rospy.get_param("min_safe_goal_depth"),
+                    min(goal_position[2], rclpy.get_param("max_safe_goal_depth")),
+                    rclpy.get_param("min_safe_goal_depth"),
                 )
                 if safe_goal != goal_position[2]:
-                    print(
+                    self.get_logger().info(
                         "WARN: Goal changed from {}m to {}m for safety.".format(
                             goal_position[2], safe_goal
                         )
@@ -157,17 +181,17 @@ class StateQuaternionServer(BaseServer):
             else:
                 goal_quat = None
 
-            time_to_settle = rospy.get_param("time_to_settle")
-            settle_check_loop_time = 1.0 / rospy.get_param("settle_check_rate")
+            time_to_settle = rclpy.get_param("time_to_settle")
+            settle_check_loop_time = 1.0 / rclpy.get_param("settle_check_rate")
 
             settled = False
             while (
                 not settled
                 and not self.cancelled
                 and my_goal == self.goal_id
-                and not rospy.is_shutdown()
+                and rclpy.ok()
             ):
-                start = rospy.get_time()
+                start = self.clock().now()
                 while (
                     not self.cancelled
                     and my_goal == self.goal_id
@@ -179,16 +203,17 @@ class StateQuaternionServer(BaseServer):
                         self.goal.do_z.data,
                         self.goal.do_quaternion.data,
                     )
-                    and not rospy.is_shutdown()
+                    and rclpy.ok()
                 ):
 
-                    if rospy.get_time() - start > time_to_settle:
+                    if self.clock().now() - start > time_to_settle:
                         settled = True
-                        print("settled")
+                        self.get_logger().info("settled")
                         break
-                    rospy.sleep(settle_check_loop_time)
+                    self.get_clock().sleep_for(Duration(seconds=5))
+                    
         else:
-            print("FAILURE, STATE SERVER DOES NOT HAVE A POSE")
+            self.get_logger().info("FAILURE, STATE SERVER DOES NOT HAVE A POSE")
 
         if not self.cancelled and my_goal == self.goal_id:
             self.server.set_succeeded()
@@ -238,8 +263,8 @@ class StateQuaternionServer(BaseServer):
 
     def check_status(self, goal_position, goal_quaternion, do_x, do_y, do_z, do_quat):
 
-        tolerance_position = rospy.get_param("pid_positional_tolerance")
-        tolerance_quat_w = rospy.get_param("pid_quaternion_w_tolerance")
+        tolerance_position = rclpy.get_param("pid_positional_tolerance")
+        tolerance_quat_w = rclpy.get_param("pid_quaternion_w_tolerance")
 
         if goal_position[0] is not None:
             pos_x_error = self.calculatePosError(self.pose.position.x, goal_position[0])

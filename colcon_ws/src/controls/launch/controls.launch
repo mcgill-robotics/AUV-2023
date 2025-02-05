@@ -1,0 +1,20 @@
+<launch>
+    <arg name="sim" default="false" />
+    <arg name="actions" default="false" />
+
+    <param name="min_safe_goal_depth" value="-4" />
+    <param name="max_safe_goal_depth" value="-0.5" />
+    <param name="time_to_settle" value="1" />
+    <param name="pid_positional_tolerance" value="0.2"/>
+    <param name="pid_quaternion_w_tolerance" value="0.97"/>
+    <param name="settle_check_rate" value="10" />
+    <param name="superimposer_loop_rate" value ="10" />
+    
+    <include file="$(find controls)/launch/pid.launch">
+        <arg name="sim" value="$(arg sim)" />
+        <arg name="actions" value="$(arg actions)" />
+    </include>
+    
+	<node name="superimposer" pkg="controls" type="superimposer.py" respawn="true" output="screen"></node>
+	<node name="servers" pkg="controls" type="init_servers.py" respawn="false" output="screen"></node>
+</launch>

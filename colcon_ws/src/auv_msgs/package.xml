@@ -7,12 +7,12 @@
   <license>GPLv3</license>
   <url type="repository">https://github.com/mcgill-robotics/AUV-2025</url>
 
-  <buildtool_depend>colcon</buildtool_depend>
+    <buildtool_depend>colcon</buildtool_depend>
 
-  <!-- Migration Dependencies -->
-  <buildtool_depend>rosidl_default_generators</buildtool_depend>
+    <!-- Migration Dependencies -->
+    <buildtool_depend>rosidl_default_generators</buildtool_depend>
 
-  <exec_depend>rosidl_default_runtime</exec_depend>
+    <exec_depend>rosidl_default_runtime</exec_depend>
 
   <member_of_group>rosidl_interface_packages</member_of_group>
 
@@ -23,10 +23,10 @@
 
   <exec_depend>message_runtime</exec_depend>
 
-  <!-- rclcpp dependencies -->
-  <buildtool_depend>ament_cmake_ros</buildtool_depend>
-  <depend>rclcpp</depend>
-  <export>
-    <build_type>ament_cmake</build_type>
+    <!-- rclcpp dependencies -->
+    <buildtool_depend>ament_cmake_ros</buildtool_depend>
+    <depend>rclcpp</depend>
+    <export>
+        <build_type>ament_cmake</build_type>
     </export>
 </package>

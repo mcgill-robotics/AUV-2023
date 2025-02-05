@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 import rclpy
+from rclpy.clock import Clock
+from rclpy.node import Node
 import actionlib
 from geometry_msgs.msg import Pose, Vector3, Vector3Stamped, Wrench
 from std_msgs.msg import Float64, Bool, Header
@@ -11,6 +13,7 @@ from auv_msgs.msg import (
     StateQuaternionGoal,
     ThrusterMicroseconds,
 )
+from controls.controls.clients import SimpleClient
 from actionlib_msgs.msg import GoalStatus
 from tf2_ros import Buffer, TransformListener
 import tf2_geometry_msgs
@@ -34,12 +37,12 @@ goals and sends them to the control servers.
 """
 
 
-class Controller:
-    def __init__(self, header_time, node):
-        print("starting controller")
+class Controller(Node):
+    def __init__(self, header_time, node_name_used):
+        super().__init__(node_name_used)
+        self.get_logger().info("starting controller")
         self.header_time = header_time
-        self.node_control = node
-
+        self.clock = Clock()
         self.x = None
         self.y = None
         self.z = None
@@ -52,70 +55,68 @@ class Controller:
         TransformListener(self.tf_buffer)
         self.tf_header = Header(frame_id="world_rotation")
 
-        self.sub = self.node_control.create_subscription(Pose, "/state/pose", self.set_position)
-        self.sub_theta_x = self.node_control.create_subscription(Float64, "/state/pose", self.set_theta_x)
-        self.sub_theta_y = self.node_control.create_subscription(Float64, "/state/theta/y", self.set_theta_y)
-        self.sub_theta_z = self.node_control.create_subscription(Float64, "/state/theta/z", self.set_theta_z)
+        self.sub = self.create_subscription(Pose, "/state/pose", self.set_position)
+        self.sub_theta_x = self.create_subscription(Float64, "/state/pose", self.set_theta_x)
+        self.sub_theta_y = self.create_subscription(Float64, "/state/theta/y", self.set_theta_y)
+        self.sub_theta_z = self.create_subscription(Float64, "/state/theta/z", self.set_theta_z)
 
-        self.pub_x_enable = self.node_control.create_publisher(
+        self.pub_x_enable = self.create_publisher(
             Bool, "/controls/pid/x/enable", 1
         )
-        self.pub_y_enable = self.node_control.create_publisher(
+        self.pub_y_enable = self.create_publisher(
             Bool, "/controls/pid/y/enable", 1
         )
-        self.pub_z_enable = self.node_control.create_publisher(
+        self.pub_z_enable = self.create_publisher(
             "/controls/pid/z/enable", Bool, 1
         )
-        self.pub_quat_enable = self.node_control.create_publisher(
+        self.pub_quat_enable = self.create_publisher(
             "/controls/pid/quat/enable", Bool, 1
         )
 
         # for killing
-        self.pub_surge = self.node_control.create_publisher(Float64, "/controls/force/surge", 1)
-        self.pub_sway = self.node_control.create_publisher(Float64, "/controls/force/sway", 1)
-        self.pub_heave = self.node_control.create_publisher(Float64, "/controls/force/heave", 1)
-        self.pub_roll = self.node_control.create_publisher(Float64, "/controls/torque/roll", 1)
-        self.pub_pitch = self.node_control.create_publisher(
+        self.pub_surge = self.create_publisher(Float64, "/controls/force/surge", 1)
+        self.pub_sway = self.create_publisher(Float64, "/controls/force/sway", 1)
+        self.pub_heave = self.create_publisher(Float64, "/controls/force/heave", 1)
+        self.pub_roll = self.create_publisher(Float64, "/controls/torque/roll", 1)
+        self.pub_pitch = self.create_publisher(
            Float64, "/controls/torque/pitch", 1
         )
-        self.pub_yaw = self.node_control.create_publisher(Float64, "/controls/torque/yaw", 1)
-        self.pub_effort =self.node_control.create_publisher(Wrench, "/controls/effort", 1)
-        self.pub_global_x = self.node_control.create_publisher(
+        self.pub_yaw = self.create_publisher(Float64, "/controls/torque/yaw", 1)
+        self.pub_effort =self.create_publisher(Wrench, "/controls/effort", 1)
+        self.pub_global_x = self.create_publisher(
             Float64, "/controls/force/global/x", 1
         )
-        self.pub_global_y = self.node_control.create_publisher(
+        self.pub_global_y = self.create_publisher(
             Float64, "/controls/force/global/y", 1
         )
-        self.pub_global_z = self.node_control.create_publisher(
+        self.pub_global_z = self.create_publisher(
             Float64, "/controls/force/global/z", 1
         )
 
         # Create publishers for the dropper topic and the claw state topic
-        self.claw_state_pub = self.node_control.create_publisher(
+        self.claw_state_pub = self.create_publisher(
             Bool, "/actuators/grabber/close", 1
         )
 
-        self.pwm_pub = self.node_control.create_publisher(
+        self.pwm_pub = self.create_publisher(
             ThrusterMicroseconds, "/propulsion/microseconds", 1
         )
 
         self.clients = []
 
-        self.EffortClient = actionlib.SimpleActionClient(
-            "/controls/server/effort", EffortAction
+        self.EffortClient = SimpleClient(
+            "/controls/server/effort", EffortAction, "EffortClientNode"
         )
         self.clients.append(self.EffortClient)
-        print("Waiting for EffortServer to come online...")
-        self.EffortClient.wait_for_server()
+        self.get_logger().info("Waiting for EffortServer to come online...")
 
-        self.StateQuaternionStateClient = actionlib.SimpleActionClient(
-            "/controls/server/state", StateQuaternionAction
+        self.StateQuaternionStateClient = SimpleClient(
+            "/controls/server/state", StateQuaternionAction, "StateQuaternionStateClientNode"
         )
         self.clients.append(self.StateQuaternionStateClient)
-        print("Waiting for StateQuaternionStateServer to come online...")
-        self.StateQuaternionStateClient.wait_for_server()
+        self.get_logger().info("Waiting for StateQuaternionStateServer to come online...")
 
-        print("Controller waiting to receive state information...")
+        self.get_logger().info("Controller waiting to receive state information...")
 
         while (
             None
@@ -142,10 +143,12 @@ class Controller:
             ]:
                 if state_axis is None:
                     debug_str += state_axis_name + ", "
-            print(debug_str)
-            rospy.sleep(1)
+            self.get_logger().info(debug_str)
+            rate = self.create_timer(1)
+            rate.sleep()
+            
 
-        print("All state information received, controller is active.")
+        self.get_logger().info("All state information received, controller is active.")
 
     def set_position(self, data):
         self.x = data.position.x
@@ -230,7 +233,7 @@ class Controller:
 
         return goal
 
-    # preempt the current action
+    # preempt the current action done in the server
     def preemptCurrentAction(self):
         for client in self.clients:
             if client.get_state() in [GoalStatus.PENDING, GoalStatus.ACTIVE]:
@@ -398,8 +401,8 @@ class Controller:
         self.pub_z_enable.publish(Bool(False))
         self.pub_quat_enable.publish(Bool(False))
 
-        start = rospy.get_time()
-        while rospy.get_time() - start < 5:
+        start = self.clock.now().seconds_nanoseconds()[0]
+        while self.clock.now().seconds_nanoseconds()[0] - start < 5:
             self.pub_surge.publish(0)
             self.pub_sway.publish(0)
             self.pub_heave.publish(0)
