@@ -1,0 +1,25 @@
+services:
+  douglas:
+    volumes:
+      - ../../../AUV-2025:/root/AUV-2025
+    environment:
+      - QT_X11_NO_MITSHM=1
+    # build: .
+    image: "docker.io/mcgillrobotics/auv_2025:trottier"
+    networks:
+      - podman
+    ports:
+      - 2222:22/tcp
+    command: ["sh", "-c", "/usr/sbin/sshd && tail -f /dev/null"]
+    restart: always
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+networks:
+  podman:
+    name: podman
+    external: true

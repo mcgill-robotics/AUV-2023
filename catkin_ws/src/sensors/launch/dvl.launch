@@ -1,0 +1,16 @@
+<launch>
+  <arg name="port" default="/dev/dvl" doc="serial port"/>
+  <arg name="baudrate" default="115200" doc="serial baud rate"/>
+
+  <node name="waterlinked_driver"
+        pkg="sensors"
+        type="waterlinked_dvl.py"
+        output="screen"
+        respawn="true"
+        respawn_delay="1">
+    <!-- Set ROS parameters -->
+    <param name="port" value="$(arg port)" type="str"/>
+    <param name="baudrate" value="$(arg baudrate)" type="int"/>
+    <param name="quat_variance" value="0.0001" type="double"/>
+  </node>
+</launch>

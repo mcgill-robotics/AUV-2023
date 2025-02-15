@@ -32,8 +32,6 @@ The source code is released under a GPLv3 license.
 - `catkin`
 - `geometry_msgs`
 - `propulsion_msgs`
-- `rosserial_arduino`
-- `rosserial_client`
 
 ### Building
 

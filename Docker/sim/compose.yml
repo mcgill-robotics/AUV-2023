@@ -1,0 +1,31 @@
+services:
+  douglas:
+    environment:
+      - DISPLAY=novnc:0.0 
+    volumes:
+      - ../../../AUV-2025:/AUV-2025
+    image: "mcgillrobotics/auv_2025:sim"
+    build: .
+    command: bash -c "tail -f /dev/null"
+    ports:
+      - "10000:10000"
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
+
+  # novnc:
+  #   image: theasp/novnc:latest
+  #   ports:
+  #     - "8080:8080"
+  #   environment:
+  #     - RUN_XTERM=no
+  #     - DISPLAY_WIDTH=6000
+  #     - DISPLAY_HEIGHT=3000 #need to adjust based off height and width of your screen, going for bigger values is typically recommended.
+
+
+    

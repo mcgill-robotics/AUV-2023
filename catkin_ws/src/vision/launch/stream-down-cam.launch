@@ -1,9 +1,0 @@
-<launch>
-	<node name="down_cam" pkg="vision" type="stream_down_cam.py" respawn="true"  output="screen">
-		<param name="sensor_id" value="0" />
-		<param name="outputImgWidth" value="1280" />
-		<param name="outputImgHeight" value="720" />
-		<param name="framerate" value="30" />
-		<param name="outputTopic" value="/down_cam" />
-	</node>
-</launch>

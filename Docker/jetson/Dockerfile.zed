@@ -1,0 +1,69 @@
+FROM stereolabs/zed:4.1-tools-devel-l4t-r36.3
+RUN sudo apt update && sudo apt install curl -y
+RUN sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
+RUN sudo apt update && sudo apt install locales
+RUN sudo locale-gen en_US en_US.UTF-8
+RUN sudo update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+ENV LANG=en_US.UTF-8
+ENV DEBIAN_FRONTEND noninteractive 
+RUN sudo apt update
+RUN  apt install --no-install-recommends -y \
+  python3-flake8-docstrings \
+  python3-pip \
+  python3-pytest-cov \
+  ros-dev-tools
+RUN  apt install -y \
+  python3-flake8-blind-except \
+  python3-flake8-builtins \
+  python3-flake8-class-newline \
+  python3-flake8-comprehensions \
+  python3-flake8-deprecated \
+  python3-flake8-import-order \
+  python3-flake8-quotes \
+  python3-pytest-repeat \
+  python3-pytest-rerunfailures
+
+RUN apt -y upgrade
+RUN apt install -y ros-humble-desktop-full
+# Install the ZED ROS2 Wrapper
+WORKDIR /root/ros2_ws/src
+RUN git clone --recursive https://github.com/stereolabs/zed-ros2-wrapper.git
+
+# Check that all the dependencies are satisfied
+WORKDIR /root/ros2_ws
+
+RUN cd src && git clone https://github.com/ros-drivers/nmea_msgs \
+  &&  git clone -b ros2 https://github.com/ros-geographic-info/geographic_info.git && cd .. 
+
+RUN apt-get install -y ros-humble-robot-localization
+RUN apt-get install -y ros-humble-point-cloud-transport
+
+RUN apt-get update -y || true && rosdep init && rosdep update && \
+  rosdep install --from-paths src --ignore-src -r -y && \
+  rm -rf /var/lib/apt/lists/*
+
+# Build the dependencies and the ZED ROS2 Wrapper
+RUN /bin/bash -c "source /opt/ros/humble/setup.bash && \
+  colcon build --parallel-workers $(nproc) --symlink-install \
+  --event-handlers console_direct+ --base-paths src \
+  --cmake-args ' -DCMAKE_BUILD_TYPE=Release' \
+  ' -DCMAKE_LIBRARY_PATH=/usr/local/cuda/lib64/stubs' \
+  ' -DCMAKE_CXX_FLAGS="-Wl,--allow-shlib-undefined"' \
+  ' --no-warn-unused-cli' "
+
+WORKDIR /root/ros2_ws
+
+RUN adduser jetson
+
+RUN wget https://stereolabs.sfo2.cdn.digitaloceanspaces.com/zedsdk/4.1/ZED_SDK_Tegra_L4T36.3_v4.1.3.zstd.run \
+  && chmod +x *.run
+
+USER jetson
+RUN ./ZED_SDK_Tegra_L4T36.3_v4.1.3.zstd.run
+
+USER root
+
+ENV RMW_IMPLEMENTATION rmw_fastrtps_cpp
+
+CMD ["bash", "-c", "tail -f /dev/null"]

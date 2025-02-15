@@ -1,3 +1,0 @@
-<launch>
-    <node name="bag_2_png" pkg="vision" type="convert_bag_to_png.py" respawn="true"  output="screen"/>
-</launch>

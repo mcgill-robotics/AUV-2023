@@ -6,7 +6,6 @@ find_package(catkin REQUIRED COMPONENTS
 	planner
 	propulsion
 	state_estimation
-	auv_description
 )
 
 catkin_package(	CATKIN_DEPENDS 
@@ -14,6 +13,5 @@ catkin_package(	CATKIN_DEPENDS
 	planner
 	propulsion
 	state_estimation
-	auv_description
 )
 

@@ -1,0 +1,5 @@
+<launch>    
+     <param name="ping_interval" value="2"/> <!-- secs -->
+     <param name="ip_address_tether" value="192.168.0.105"/>
+     <node name="tether_status" pkg="sensors" type="tether_status.py" output="screen" respawn="true"/>
+</launch>

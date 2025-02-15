@@ -18,15 +18,28 @@ catkin_ws/.catkin_tools/
 
 # vscode files
 **/*.vscode/*
-# submodules
-auv-ign
-catkin_ws/src/sim/auv-sim
-catkin_ws/src/sim/ros_gz
-catkin_ws/src/sim
-catkin_ws/src/auv-sim
 =========
 #recorded videos
 *.mp4
 #training images
 *.png
 *.jpg
+*.bag
+*unity.lock
+
+#testing files
+catkin_ws/src/planner/src/testMission.py
+catkin_ws/src/state_estimation/data/
+
+# taken from ros tcp endpoint
+catkin_ws/src/sim/.DS_Store
+catkin_ws/src/sim/*.pyc
+catkin_ws/src/sim/.idea
+catkin_ws/src/sim/*~
+catkin_ws/src/sim/build
+catkin_ws/src/sim/devel
+
+# zed workspace
+catkin_ws/src/zed
+catkin_ws/src/vision/model_pipeline/data/
+catkin_ws/src/vision/model_pipeline/data.yaml

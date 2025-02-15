@@ -1,0 +1,77 @@
+<launch>
+    <arg name="sim" default="false" />
+    <group unless="$(arg sim)">
+        <param name="front_cam_x_offset" value="0" />
+        <param name="front_cam_y_offset" value="0" />
+        <param name="front_cam_z_offset" value="0" />
+        <param name="down_cam_x_offset" value="0" />
+        <param name="down_cam_y_offset" value="0" />
+        <param name="down_cam_z_offset" value="0" />
+        <param name="down_cam_yaw_offset" value="0" />
+        <param name="depth_map_scale_factor" value="1000" />
+        <param name="down_cam_model_file" 
+            value="$(find vision)/src/models/down_cam_comp.pt" />
+        <param name="front_cam_model_file" 
+            value="$(find vision)/src/models/front_cam_comp.pt" />
+        <param name="pool_depth" value="-5" />
+        <param name="octagon_table_height" value="1.25" />
+        <param name="lane_marker_height" value="0.4" />
+        <param name="bin_height" value="0.2" />
+        <param name="down_cam_hfov" value="129.4904" />
+        <param name="down_cam_vfov" value="100" />
+        <param name="down_cam_class_name_mappings" value="['Bin', 'Lane Marker', 'Octagon Table']"/>
+        <param name="front_cam_class_name_mappings" value="['Buoy', 'Gate', 'Octagon Table']"/>
+        <param name="lane_marker_downscaling_size" value="100" /> <!-- largest size of either axis of image after downscaling -->
+        <param name="lane_marker_blur_1_amt" value="0.1" /> <!-- first blur amount -->
+        <param name="lane_marker_color_tolerance" value="0.08" /> <!-- color tolerance (to check if pixel is orange or not) -->
+        <param name="lane_marker_blur_2_amt" value="0.04" /> <!-- second blur amount -->
+    </group>
+    <group if="$(arg sim)">
+        <param name="front_cam_x_offset" value="0.312" />
+        <param name="front_cam_y_offset" value="0" />
+        <param name="front_cam_z_offset" value="0" />
+        <param name="down_cam_x_offset" value="0.02" />
+        <param name="down_cam_y_offset" value="0.01" />
+        <param name="down_cam_z_offset" value="-0.2" />
+        <param name="down_cam_yaw_offset" value="0" />
+        <param name="depth_map_scale_factor" value="1" />
+        <param name="down_cam_model_file" 
+            value="$(find vision)/src/models/down_cam_sim.pt" />
+        <param name="front_cam_model_file" 
+            value="$(find vision)/src/models/front_cam_sim.pt" />
+        <param name="pool_depth" value="-5" />
+        <param name="octagon_table_height" value="1.25" />
+        <param name="lane_marker_height" value="0.4" />
+        <param name="bin_height" value="0.5" />
+        <param name="down_cam_hfov" value="129.4904" />
+        <param name="down_cam_vfov" value="100" />
+        <param name="down_cam_class_name_mappings" value="['Bin', 'Lane Marker', 'Octagon Table']"/>
+        <param name="front_cam_class_name_mappings" value="['Buoy', 'Gate', 'Octagon Table']"/>
+        <param name="lane_marker_downscaling_size" value="100" /> <!-- largest size of either axis of image after downscaling -->
+        <param name="lane_marker_blur_1_amt" value="0.1" /> <!-- first blur amount -->
+        <param name="lane_marker_color_tolerance" value="0.08" /> <!-- color tolerance (to check if pixel is orange or not) -->
+        <param name="lane_marker_blur_2_amt" value="0.04" /> <!-- second blur amount -->
+    </group>
+
+    <param name="same_object_radius_lane_marker" value="1.5" /> <!-- need one of these params for every object which might appear more than once in the pool !!!-->
+    <!-- for every param above, you must also update the object_map.py dictionary sameObjectRadiusPerLabel -->
+    <param name="NULL_PLACEHOLDER" value="-1234.5" />
+    <param name="log_model_prediction_info" value="false" />
+    <param name="min_observations_for_mapping" value="5" />
+    <param name="object_detection_frame_interval" value="5" />
+    <param name="min_prediction_confidence" value="0.4" />
+    <param name="max_object_detection_distance" value="10" />
+    <param name="max_distance_for_point_cloud_fill_cleaning" value="0.5" />
+    <param name="min_distance_for_valid_point_cloud_point" value="0.5" />
+    <param name="max_counts_per_label" value='{"Buoy":1, "Gate":1, "Lane Marker":2, "Octagon Table":1, "Bin":1}'/>
+    <param name="debug_lane_marker_thresholding" value="false" />
+    <param name="debug_point_cloud_cleaning" value="false" />
+
+    <node name="object_detection" pkg="vision" type="object_detection.py" respawn="true"  output="screen">
+        <param name="sim" value="$(arg sim)" />
+    </node>
+    <node name="mapping" pkg="vision" type="object_map.py" respawn="true"  output="screen"/>
+    <node name="debug_thresholding" pkg="vision" type="debug_thresholding.py" respawn="true"  output="screen"/>
+
+    <!-- <node name="point_cloud" pkg="vision" type="point_cloud.py" respawn="true"  output="screen"/> -->
+</launch>

@@ -13,11 +13,9 @@
   <build_depend>planner</build_depend>
   <build_depend>propulsion</build_depend>
   <build_depend>state_estimation</build_depend>
-  <build_depend>auv_description</build_depend>
 
   <exec_depend>controls</exec_depend>
   <exec_depend>planner</exec_depend>
   <exec_depend>propulsion</exec_depend>
   <exec_depend>state_estimation</exec_depend>
-  <exec_depend>auv_description</exec_depend>
 </package>

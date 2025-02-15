@@ -1,0 +1,15 @@
+<launch>
+     <!-- Distances to hydrophone 1 -->
+	<param name="hydrophones_dx" value="0.1"/>
+	<param name="hydrophones_dy" value="0.1"/>
+	<param name="hydrophones_dz" value="-0.1"/>
+
+	<param name="hydrophones_time_unit" value="0.0000001"/>
+
+	<node name="hydrophones_bearing"
+		pkg="state_estimation"
+		type="hydrophones_bearing.py"
+		output="screen"
+		respawn="true">
+	</node>
+</launch>

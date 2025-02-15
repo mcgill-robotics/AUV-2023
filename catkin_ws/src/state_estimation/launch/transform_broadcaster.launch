@@ -1,3 +1,0 @@
-<launch>
-	<node name="transform_broadcaster" pkg="state_estimation" type="transform_broadcaster.py" respawn="false" output="screen"/>
-</launch>

@@ -1,3 +1,0 @@
-<launch>
-	<node name="servers" pkg="controls" type="init_servers.py" respawn="false" output="screen"></node>
-</launch>

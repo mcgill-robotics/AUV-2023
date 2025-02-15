@@ -1,5 +1,0 @@
-<launch>
-	<include file="$(find propulsion)/launch/propulsion.launch" />
-
-	<node name="thrusters_test" pkg="dry-test" type="thrusters.py" respawn="false" output="screen"/>
-</launch>

@@ -1,0 +1,18 @@
+<launch>
+	<arg name="vision" default="false" />
+
+	<include file="$(find sensors)/launch/sensors_status.launch"/>
+	
+	<include file="$(find sensors)/launch/tether_status.launch"/>
+	<include file="$(find sensors)/launch/depth_sensor_and_display.launch"/>
+	<include file="$(find sensors)/launch/dvl.launch"/>
+	<include file="$(find sensors)/launch/imu.launch"/>
+	<include file="$(find sensors)/launch/hydrophones.launch"/>
+
+	<group if="$(arg vision)">
+     	<include file="$(find sensors)/launch/stream-down-cam.launch"/>
+     	<include file="$(find sensors)/launch/stream-front-cam.launch"/>
+	</group>
+
+
+</launch>

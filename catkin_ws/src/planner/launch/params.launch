@@ -1,0 +1,30 @@
+<launch>
+	<param name="target_color" value="red"/>
+    <param name="nominal_depth" value="-2" /> <!-- Z value we want the AUV to go when it "centers" itself (default depth so to speak) -->
+    <param name="down_cam_search_depth" value="-2" /> <!-- Z value we want the AUV to go when it should be mapping objects with the down cam -->
+    
+    <param name="object_observation_time" value="10" />
+    <param name="linear_search_step_size" value="2" />
+    <param name="in_place_search_rotation_increment" value="50"/>
+    <param name="bfs_expansion_size" value="1" />
+    <param name="mission_wait_time" value="30" /> <!-- time to wait before actually starting mission (for comp) -->
+    <param name="buoy_centering_offset_distance" value="2"/>
+	<param name="buoy_circumnavigation_radius" value="1"/>
+    <param name="quali_gate_width" value="2"/>
+    <param name="gate_width" value="3"/>
+    <param name="red_side" value="left"/> <!-- The side of the object that red corresponds to -->
+    <param name="num_full_spins" value="2"/>
+    <param name="octagon_closeness_threshold" value="3"/>
+    <!-- TIME LIMIT PARAMETERS -->
+    <param name="object_search_time_limit" value="180" />
+    <param name="navigate_gate_time_limit" value="120" />
+    <param name="navigate_buoy_time_limit" value="120" />
+    <param name="navigate_lane_marker_time_limit" value="120" />
+    <param name="navigate_pinger_time_limit" value="1800" />
+    <param name="navigate_bin_time_limit" value="120" />
+    <param name="octagon_time_limit" value="120" />
+    <param name="trick_time_limit" value="120" />
+    <!-- CENTER DISTANCE THRESHOLD-->
+    <param name="center_dist_threshold" value="20" />
+    <param name="centering_delta_increment" value="0.1" />
+</launch>

@@ -1,5 +1,0 @@
-<launch>
-	<node name="sbg_device" pkg="sbg_driver" type="sbg_device" output="screen" respawn="true">
-		<rosparam command="load" file="$(find imu)/config/sbg_imu.yaml"/>
-	</node>
-</launch>

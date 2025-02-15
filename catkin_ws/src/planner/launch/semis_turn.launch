@@ -1,5 +1,0 @@
-<launch>
-	<include file="$(find bringup)/launch/bringup.launch" />
-	<node pkg="planner" name="quali" type="semis_turn.py" respawn="False" output="screen"/>
-	<include file="$(find planner)/launch/bag_everything.launch"/>
-</launch>

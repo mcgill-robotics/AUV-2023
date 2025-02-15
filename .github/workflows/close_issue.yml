@@ -1,0 +1,19 @@
+name: Close issue
+
+on:
+    issues:
+        types: [closed]
+env:
+    DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+    CHAT_GPT_TOKEN: ${{ secrets.CHAT_GPT_TOKEN }}
+
+jobs:
+  discord:
+    runs-on: ubuntu-20.04
+    steps:
+        - uses: actions/checkout@v3
+        - run: |
+            pip install -U discord.py
+            pip install openai==1.1.1
+            python .github/discord_bot.py ${{ github.event.issue.number }}         
+            

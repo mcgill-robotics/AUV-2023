@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<package format="2">
+    <name>sim</name>
+    <version>0.1.0</version>
+    <description>
+        TODO.
+    </description>
+
+    <maintainer email="dev@mcgillrobotics.com">McGill Robotics</maintainer>
+    <license>GPLv3</license>
+    <url type="respository">https://github.com/mcgill-robotics/AUV-2025</url>
+
+    <buildtool_depend>catkin</buildtool_depend>
+
+    <build_depend>message_generation</build_depend>
+    <exec_depend>message_runtime</exec_depend>
+
+    <depend>auv_msgs</depend>
+    <depend>geometry_msgs</depend>
+    <depend>rospy</depend>
+    <depend>python3-numpy</depend>
+    <depend>std_msgs</depend>
+    <depend>tf2</depend>
+    <depend>tf2_geometry_msgs</depend>
+    <depend>tf2_ros</depend>
+    <depend>tf</depend>
+    <depend>sbg_driver</depend>
+
+</package>

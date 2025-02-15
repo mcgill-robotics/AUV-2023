@@ -1,6 +1,6 @@
 <launch>
     <arg name="sim" default="false"/>
     <node name="render_visualization" pkg="vision" type="render_visualization.py" respawn="false" output="screen"/>
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find vision)/config/visualization_config.rviz" />
-    <node name="point_cloud" pkg="vision" type="point_cloud.py" output="screen"/>
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find vision)/src/config/visualization_config.rviz" />
+    <!-- <node name="point_cloud" pkg="vision" type="point_cloud.py" output="screen"/> -->
 </launch>

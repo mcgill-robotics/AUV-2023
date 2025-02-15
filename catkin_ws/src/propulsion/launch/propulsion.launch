@@ -1,4 +1,19 @@
 <launch>
-    <include file="$(find propulsion)/launch/thrust_mapper.launch" />
-    <include file="$(find propulsion)/launch/thrusters.launch" />
+    <arg name="sim" default="false" />
+    <group unless="$(arg sim)">
+        <node name="thrusters_serial_server" pkg="rosserial_python" type="serial_node.py" respawn="true">
+            <param name="port" value="/dev/power"/>
+            <param name="baud" value="115200"/>
+        </node>
+    </group>
+
+    <param name="thruster_PWM_lower_limit" value="1228" />
+    <param name="thruster_PWM_upper_limit" value="1768" />
+    <param name="distance_thruster_thruster_length" value="0.4" />
+    <param name="distance_thruster_thruster_width" value="0.47" />
+    <param name="angle_thruster" value="45" />
+    <param name="distance_thruster_middle_length" value="0.0925" />
+
+
+	<node name="thrust_mapper" pkg="propulsion" type="thrust_mapper.py" respawn="true" output="screen"/>
 </launch>

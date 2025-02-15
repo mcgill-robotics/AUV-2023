@@ -1,0 +1,3 @@
+<launch>
+        <node name="bridge" pkg="sensors" type="start_bridge.sh" output="screen" />
+</launch>

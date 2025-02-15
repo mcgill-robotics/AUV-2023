@@ -1,0 +1,29 @@
+name: Integration Test
+
+on:
+  pull_request:
+    branches: [noetic]
+
+jobs:
+  CI:
+    runs-on: ubuntu-20.04
+    container:
+        image: mcgillrobotics/auv_2024:actions
+    steps:
+      - uses: actions/checkout@v3
+      - name: catkin build
+        shell: bash
+        run: |
+            git config --global --add safe.directory /__w/AUV-2025/AUV-2025
+            git submodule update --init --recursive
+            source /opt/ros/noetic/setup.bash
+            cd catkin_ws/src
+            git clone https://github.com/mcgill-robotics/auv-sim-gazebo.git
+            cd ..
+            catkin build
+      # - name: state test
+      #   shell: bash
+      #   run: |
+      #       cd catkin_ws
+      #       source devel/setup.bash
+      #       xvfb-run -a rostest planner simple.test

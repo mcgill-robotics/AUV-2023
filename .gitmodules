@@ -1,4 +1,0 @@
-[submodule "catkin_ws/src/auv-sim"]
-	path = catkin_ws/src/auv-sim
-	url = git@github.com:mcgillrobotics/auv-sim.git
-	ignore = dirty

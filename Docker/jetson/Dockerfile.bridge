@@ -1,0 +1,9 @@
+FROM ros:foxy-ros1-bridge-focal
+
+COPY scripts/set_env.bash /set_env.bash
+
+SHELL ["/bin/bash"]
+
+ENV RMW_IMPLEMENTATION rmw_fastrtps_cpp
+
+CMD ["bash", "-c", "tail -f /dev/null"]

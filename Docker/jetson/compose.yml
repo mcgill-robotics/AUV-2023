@@ -1,0 +1,67 @@
+services: 
+  douglas:
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - /dev:/dev
+      - /var/run/docker.sock:/var/run/docker.sock
+      - type: bind
+        source: ../../../AUV-2025
+        target: /AUV-2025
+    image: "mcgillrobotics/auv_2025:jetson"
+    privileged: true
+    environment:
+      - DISPLAY
+      - QT_X11_NO_MITSHM=1
+      - NVIDIA_VISIBLE_DEVICES=all
+      - UDEV=on
+
+    runtime: nvidia
+    command: bash -c ${OVERRIDE_COMMAND:-"tail -f /dev/null"}
+    network_mode: host
+    build: .
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  zed:
+    volumes:
+      - /dev:/dev
+    image: "mcgillrobotics/auv_2025:zed"
+    build:
+      context: ../../../AUV-2025
+      dockerfile: Docker/jetson/Dockerfile.zed
+    privileged: true
+    environment:
+      - DISPLAY
+      - QT_X11_NO_MITSHM=1
+      - NVIDIA_VISIBLE_DEVICES=all
+      - UDEV=on
+    runtime: nvidia
+    network_mode: host
+
+    command: bash -c "source /opt/ros/humble/setup.bash && source /root/ros2_ws/install/local_setup.bash" 
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+
+  bridge:
+    image: "mcgillrobotics/auv_2025:rosbridge"
+    build:
+      context: ../../../AUV-2025
+      dockerfile: Docker/jetson/Dockerfile.bridge
+    privileged: true
+    environment:
+      - DISPLAY
+      - QT_X11_NO_MITSHM=1
+      - NVIDIA_VISIBLE_DEVICES=all
+    network_mode: host

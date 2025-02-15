@@ -1,5 +1,7 @@
 <launch>
-	<include file="$(find bringup)/launch/bringup.launch" />
+	<include file="$(find bringup)/launch/bringup.launch">
+		<arg name="bag" value="true" />
+	</include>
+	<include file="$(find planner)/launch/params.launch"/>
 	<node pkg="planner" name="quali" type="quali.py" respawn="False" output="screen"/>
-	<include file="$(find planner)/launch/bag_everything.launch"/>
 </launch>

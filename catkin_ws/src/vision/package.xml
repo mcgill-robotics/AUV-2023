@@ -13,11 +13,12 @@
   <build_depend>auv_msgs</build_depend>
   <build_depend>sensor_msgs</build_depend>
   <build_depend>rospy</build_depend>
-  <build_depend>realsense2_camera</build_depend>
+  <build_depend>usb_cam</build_depend>
 
   <exec_depend>auv_msgs</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>rospy</exec_depend>
-  <exec_depend>realsense2_camera</exec_depend>
+  <exec_depend>usb_cam</exec_depend>
 
+  <test_depend>rostest</test_depend>
 </package>

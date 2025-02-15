@@ -1,0 +1,6 @@
+raw_image_file,debug_image_file,x,y,width,height,angles_goal_1,angles_goal_2,center_point_goal_1,center_point_goal_2
+lane_marker_0_straight.png,lane_marker_0_straight_debug.png,511.80,277.32,83.05,312.42,-80,100,515,290
+lane_marker_45_left.png,lane_marker_45_left_debug.png,386.73,227.34,100.12,187.05,135,-90,415,215
+lane_marker_45_right.png,lane_marker_45_right_debug.png,490.20,213.37,95.27,198.39,-90,45,455,200
+lane_marker_90_left.png,lane_marker_90_left_debug.png,360.28,154.57,122.78,121.66,-90,-180,405,110
+lane_marker_90_right.png,lane_marker_90_right_debug.png,424.55,226.84,128.59,129.91,0,-90,375,180

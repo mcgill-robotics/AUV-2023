@@ -1,6 +1,0 @@
-<launch>
-	<node name="state_aggregator" pkg="state_estimation" type="state_aggregator.py" respawn="true" output="screen"/>
-	<param name="theta_x_offset" type="double" value="0.0"/>
-	<param name="theta_y_offset" type="double" value="0.0"/>
-	<param name="theta_z_offset" type="double" value="0.0" />
-</launch>

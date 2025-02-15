@@ -13,9 +13,9 @@ The controls takes into from two different servers representing two different mo
 
 The state server accepts a pose (position + orientation), and publishes to the PIDs to enter the desired state. It monitors the pose and waits for the auv to settle in the correct pose before completing. Preempting this server causes to publish the current pose to the PIDs, effectively braking the auv. When sending a goal to the state server, you are allowed to specify which axes to consider and which to ignore. For example you can tell it to descend by some amount without affecting the motion in the other 5 axes. You are also allowed to tell the state server to interpret the goal as a displacement.
 
-### Superimposer Server
+### Effort Server
 
-The superimposer server accepts a combination of surge, sway, heave, roll, pitch, and yaw values. These values should be interpreted as forces which will be sent to superimposer to be combined into an effort. When sending a goal to the state server, you are allowed to specify which axes to consider and which to ignore. For example, you can tell it to surge by some amount which modifying the values being published to sway,heave ... etc. You are allowed to tell the superimposer server to interpret the goal as a displacement. 
+The effort server accepts a combination of surge, sway, heave, roll, pitch, and yaw values. These values should be interpreted as forces which will be sent to superimposer to be combined into an effort. When sending a goal to the server, you are allowed to specify which axes to consider and which to ignore. For example, you can tell it to surge by some amount which modifying the values being published to sway,heave ... etc.
 
 ### License
 
@@ -49,7 +49,7 @@ This package implements a Waypoint action server as specified in auv_msgs.
 | Action | description |
 | ------ | ------|
 | `StateAction` | A desired pose for the auv to enter. |
-| `SuperimposerAction` | A desired surge/sway/heave/roll/pitch/yaw combination. |
+| `EffortAction` | A desired surge/sway/heave/roll/pitch/yaw combination. |
 
 
 ### Dependencies

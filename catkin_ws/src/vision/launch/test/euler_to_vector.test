@@ -1,0 +1,7 @@
+<launch>
+	<include file="$(find sim)/launch/headless.launch"/>
+	<include file="$(find sim)/launch/sim.launch">
+		<arg name="vision" value="false" />
+	</include>
+	<test test-name="euler_to_vector" pkg="vision" type="euler_to_vector.py" time-limit="1500.0"/>
+</launch>

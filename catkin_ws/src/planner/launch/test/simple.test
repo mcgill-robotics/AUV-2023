@@ -1,0 +1,4 @@
+<launch>
+	<include file="$(find auv-sim-gazebo)/launch/test/qualifying-test.launch"/>
+	<test test-name="move" pkg="planner" type="simple_test.py" time-limit="1500.0"/>
+</launch>

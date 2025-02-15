@@ -1,0 +1,5 @@
+rosservice call /sbg/mag_calibration
+
+-> rotate IMU into all orientations possible
+
+rosservice call /sbg/mag_calibration_save

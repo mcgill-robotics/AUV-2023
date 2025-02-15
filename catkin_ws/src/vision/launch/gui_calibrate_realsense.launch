@@ -1,3 +1,0 @@
-<launch>
-    <node name="rqt_gui" pkg="rqt_gui" type="rqt_gui" respawn="false" output="log" args = "--perspective-file $(find vision)/config/calibrate_depth.perspective"/>
-</launch>

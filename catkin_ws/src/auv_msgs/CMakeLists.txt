@@ -17,16 +17,19 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(FILES
 	ThrusterMicroseconds.msg
 	ThrusterForces.msg
-	ObjectDetectionFrame.msg
-	ObjectMap.msg
-	ImuData.msg
+	PingerBearing.msg
+	PingerTimeDifference.msg
+	VisionObject.msg
+	VisionObjectArray.msg
 	DeadReckonReport.msg
 	VelocityReport.msg
+	UnityState.msg
 )
+
 
 add_action_files(FILES
 	StateQuaternion.action
-	Superimposer.action
+	Effort.action
 )
 
 generate_messages(DEPENDENCIES

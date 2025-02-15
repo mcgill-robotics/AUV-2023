@@ -1,0 +1,6 @@
+<launch>
+    <node pkg="vision" type="image_collection.py" name="image_collection" respawn="false" output="screen">
+        <param name="image_data_dir/front_cam" value="$(find vision)/data_front_cam" />
+        <param name="image_data_dir/down_cam" value="$(find vision)/data_down_cam" />
+    </node>
+</launch>

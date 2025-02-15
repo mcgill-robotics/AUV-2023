@@ -1,131 +1,292 @@
 #!/usr/bin/env python3
+
 import rospy
-from auv_msgs.msg import ObjectDetectionFrame, ObjectMap
 import math
 
-#callback when a new object detection frame is published
-def objectDetectCb(msg):
+from auv_msgs.msg import VisionObject, VisionObjectArray
+
+
+# Callback when a new object detection frame is published.
+def object_detect_cb(msg):
     try:
-        addObservation(msg)
-        reduceMap()
-        publishMap()
+        add_observation(msg)
+        reduce_map()
+        publish_map()
     except Exception as e:
         print(str(e))
 
-#add an object detection frame to the object map
-def addObservation(msg):
-    for i in range(len(msg.label)):
-        #find which object this detection pertains to
-        obj_i = findClosestObject([msg.label[i], msg.x[i], msg.y[i], msg.z[i]])
-        #if it does not pertain to any preexisting object add it to the map
+
+# Add an object detection frame to the object map.
+def add_observation(msg):
+    # Loop over every object in the detection_frame array.
+    for detection_frame in msg.array:
+        # Find which object this detection pertains to.
+        obj_i = find_closest_object(
+            [
+                detection_frame.label,
+                detection_frame.x,
+                detection_frame.y,
+                detection_frame.z,
+            ]
+        )
+        # If it does not pertain to any preexisting object add it to the map.
         if obj_i == -1:
-            object_map.append([msg.label[i], msg.x[i], msg.y[i], msg.z[i], msg.theta_z[i], msg.extra_field[i], 1])
+            object_map.append(
+                [
+                    detection_frame.label,
+                    detection_frame.x,
+                    detection_frame.y,
+                    detection_frame.z,
+                    detection_frame.theta_z,
+                    detection_frame.extra_field,
+                    1,
+                    detection_frame.confidence,
+                ]
+            )
         else:
-            #otherwise update the object map with the new observation
-            updateMap(obj_i, [msg.label[i], msg.x[i], msg.y[i], msg.z[i], msg.theta_z[i], msg.extra_field[i], 1])
+            # Otherwise update the object map with the new observation.
+            update_map(
+                obj_i,
+                [
+                    detection_frame.label,
+                    detection_frame.x,
+                    detection_frame.y,
+                    detection_frame.z,
+                    detection_frame.theta_z,
+                    detection_frame.extra_field,
+                    1,
+                    detection_frame.confidence,
+                ],
+            )
 
-#given an observation, find the object to which it pertains to (object within a certain radius of same class)
-def findClosestObject(observation, indexToIgnore=-1):
+
+# Given an observation, find the object to which it pertains
+# to (object within a certain radius of same class).
+def find_closest_object(observation, indexToIgnore=-1):
     observed_label, observed_x, observed_y, observed_z = observation
-    #find all objects within sameObjectRadius of this observation in the map
+    # Find all objects within sameObjectRadius of this observation in the map.
     close_objs = []
-    #go through every object in map and add to close_objs if close enough
+    # Go through every object in map and add to close_objs if close enough.
     for obj_i in range(len(object_map)):
-        obj_label, obj_x, obj_y, obj_z, _, _, _ = object_map[obj_i]
-        if observed_label != obj_label or obj_i == indexToIgnore: continue
-        #find distance between object in map and observation
-        #ignore Z position when reducing map
-        objs_distance_apart = dist((obj_x, obj_y, obj_z), (observed_x, observed_y, observed_z)) if indexToIgnore == -1 else dist((obj_x, obj_y, 0), (observed_x, observed_y, 0))
-        if objs_distance_apart < sameObjectRadius:
+        obj_label, obj_x, obj_y, obj_z, _, _, _, _ = object_map[obj_i]
+        if observed_label != obj_label or obj_i == indexToIgnore:
+            continue
+        # Find distance between object in map and observation.
+        # Ignore Z position when reducing map.
+        objs_distance_apart = (
+            dist((obj_x, obj_y, obj_z), (observed_x, observed_y, observed_z))
+            if indexToIgnore == -1
+            else dist((obj_x, obj_y, 0), (observed_x, observed_y, 0))
+        )
+        if objs_distance_apart < same_object_radius_per_label.get(observed_label, 1000):
             close_objs.append(obj_i)
-    #if there is only one object within radius return that
-    if len(close_objs) == 0: return -1
-    #return closest object to observation
-    else: return min(close_objs, key=lambda i : dist((object_map[i][1],object_map[i][2],object_map[i][3]), (observed_x, observed_y, observed_z)))
+    # If there is only one object within radius return that.
+    if len(close_objs) == 0:
+        return -1
+    # Return closest object to observation.
+    else:
+        return min(
+            close_objs,
+            key=lambda i: dist(
+                (object_map[i][1], object_map[i][2], object_map[i][3]),
+                (observed_x, observed_y, observed_z),
+            ),
+        )
 
-def angleDifference(ang1, ang2):
-    diff = (ang1-ang2) % 360
-    if diff > 180: diff -= 360
+
+def angle_difference(ang1, ang2):
+    diff = (ang1 - ang2) % 360
+    if diff > 180:
+        diff -= 360
     return abs(diff)
 
-#NOT 100% SURE ABOUT PROBABILITIES
-#update the object map using probabilities to improve estimate of object pose and label
-def updateMap(obj_i, observation):
-    _, observed_x, observed_y, observed_z, observed_theta_z, observed_extra_field, num_new_observations = observation
-    label, current_x, current_y, current_z, current_theta_z, current_extra_field, num_observations = object_map[obj_i]
-    
-    #CALCULATE POSE
-    new_x = (num_new_observations*observed_x + num_observations*current_x) / (num_observations + num_new_observations)
-    new_y = (num_new_observations*observed_y + num_observations*current_y) / (num_observations + num_new_observations)
-    new_z = (num_new_observations*observed_z + num_observations*current_z) / (num_observations + num_new_observations)
 
-    if label == "Lane Marker": #LANE MARKER HAD TO DEALT WITH DIFFERENTLY FOR THETA Z AND EXTRA_FIELD
-        #if no theta z measurement keep current theta z
-        if observed_theta_z == -1234.5 and observed_extra_field == -1234.5:
+# @TO-DO: Check probabilities.
+# Update the object map using probabilities to improve
+# estimate of object pose and label.
+def update_map(obj_i, observation):
+    (
+        _,
+        observed_x,
+        observed_y,
+        observed_z,
+        observed_theta_z,
+        observed_extra_field,
+        num_new_observations,
+        observed_confidence,
+    ) = observation
+    (
+        label,
+        current_x,
+        current_y,
+        current_z,
+        current_theta_z,
+        current_extra_field,
+        num_observations,
+        current_confidence,
+    ) = object_map[obj_i]
+
+    if observed_confidence <= 0:
+        observed_confidence = 1e-5
+    if current_confidence <= 0:
+        current_confidence = 1e-5
+
+    # Calculate pose.
+    new_x = (
+        observed_confidence * observed_x
+        +  current_confidence * current_x
+    ) / (
+         current_confidence
+        + observed_confidence
+    )
+    new_y = (
+        observed_confidence * observed_y
+        +  current_confidence * current_y
+    ) / (
+         current_confidence
+        + observed_confidence
+    )
+    new_z = (
+        observed_confidence * observed_z
+        +  current_confidence * current_z
+    ) / (
+         current_confidence
+        + observed_confidence
+    )
+
+    if label == "Lane Marker":
+        # Lane marker had to dealt with differently for theta z and extra_field.
+        # If no theta z measurement keep current theta z.
+        if (
+            observed_theta_z == NULL_PLACEHOLDER
+            and observed_extra_field == NULL_PLACEHOLDER
+        ):
             new_theta_z = current_theta_z
             new_extra_field = current_extra_field
-        #if there was no previous theta z but observation has a theta z set theta z to observation theta z
-        elif current_extra_field == -1234.5 and current_theta_z == -1234.5:
+        # If there was no previous theta z but observation has a theta z set
+        # theta z to observation theta z.
+        elif (
+            current_extra_field == NULL_PLACEHOLDER
+            and current_theta_z == NULL_PLACEHOLDER
+        ):
             new_theta_z = observed_theta_z
             new_extra_field = observed_extra_field
         else:
-            #find closest match between observed angles and current angles
-            if angleDifference(observed_theta_z, current_theta_z) < angleDifference(observed_theta_z, current_extra_field):
-                #CLOSEST ANGLES ARE OBSERVED THETA_Z AND CURRENT THETA_Z
-                while abs(observed_theta_z-current_theta_z) > 180:
-                    if observed_theta_z > current_theta_z: observed_theta_z -= 360
-                    else: observed_theta_z += 360
-                new_theta_z = (num_new_observations*observed_theta_z + num_observations*current_theta_z) / (num_observations + num_new_observations)
-                #CLOSEST ANGLES ARE OBSERVED EXTRA_FIELD AND CURRENT EXTRA_FIELD
-                while abs(observed_extra_field-current_extra_field) > 180:
-                    if observed_extra_field > current_extra_field: current_extra_field += 360
-                    else: observed_extra_field += 360
-                new_extra_field = (num_new_observations*observed_extra_field + num_observations*current_extra_field) / (num_observations + num_new_observations)
+            # Find closest match between observed angles and current angles.
+            if angle_difference(observed_theta_z, current_theta_z) < angle_difference(
+                observed_theta_z, current_extra_field
+            ):
+                # Closest angles are observed theta_z and current theta_z.
+                while abs(observed_theta_z - current_theta_z) > 180:
+                    if observed_theta_z > current_theta_z:
+                        observed_theta_z -= 360
+                    else:
+                        observed_theta_z += 360
+                new_theta_z = (
+                    observed_confidence * observed_theta_z
+                    +  current_confidence * current_theta_z
+                ) / (
+                     current_confidence
+                    + observed_confidence
+                )
+                # Closes angles are observed extra_field and current extra_field.
+                while abs(observed_extra_field - current_extra_field) > 180:
+                    if observed_extra_field > current_extra_field:
+                        current_extra_field += 360
+                    else:
+                        observed_extra_field += 360
+                new_extra_field = (
+                    observed_confidence * observed_extra_field
+                    +  current_confidence * current_extra_field
+                ) / (
+                     current_confidence
+                    + observed_confidence
+                )
             else:
-                #CLOSEST ANGLES ARE OBSERVED THETA_Z AND CURRENT EXTRA_FIELD
-                while abs(observed_theta_z-current_extra_field) > 180:
-                    if observed_theta_z > current_extra_field: observed_theta_z -= 360
-                    else: observed_theta_z += 360
-                new_extra_field = (num_new_observations*observed_theta_z + num_observations*current_extra_field) / (num_observations + num_new_observations)
-                #CLOSEST ANGLES ARE OBSERVED EXTRA_FIELD AND CURRENT THETA_Z
-                while abs(observed_extra_field-current_theta_z) > 180:
-                    if observed_extra_field > current_theta_z: observed_extra_field -= 360
-                    else: observed_extra_field += 360
-                new_theta_z = (num_new_observations*observed_extra_field + num_observations*current_theta_z) / (num_observations + num_new_observations)
-    
+                # Closest angles are observed theta_z and current extra_field.
+                while abs(observed_theta_z - current_extra_field) > 180:
+                    if observed_theta_z > current_extra_field:
+                        observed_theta_z -= 360
+                    else:
+                        observed_theta_z += 360
+                new_extra_field = (
+                    observed_confidence * observed_theta_z
+                    +  current_confidence * current_extra_field
+                ) / (
+                     current_confidence
+                    + observed_confidence
+                )
+                # Closest angles are observed extra_field and current theta_z.
+                while abs(observed_extra_field - current_theta_z) > 180:
+                    if observed_extra_field > current_theta_z:
+                        observed_extra_field -= 360
+                    else:
+                        observed_extra_field += 360
+                new_theta_z = (
+                    observed_confidence * observed_extra_field
+                    +  current_confidence * current_theta_z
+                ) / (
+                     current_confidence
+                    + observed_confidence
+                )
     else:
-        #CALCULATE THETA Z
-        #if no theta z measurement keep current theta z
-        if observed_theta_z == -1234.5:
+        # Calculate theta z.
+        # if no theta z measurement keep current theta z.
+        if observed_theta_z == NULL_PLACEHOLDER:
             new_theta_z = current_theta_z
-        #if there was no previous theta z but observation has a theta z set theta z to observation theta z
-        elif current_theta_z == -1234.5:
+        # If there was no previous theta z but observation has
+        # a theta z set theta z to observation theta z.
+        elif current_theta_z == NULL_PLACEHOLDER:
             new_theta_z = observed_theta_z
         else:
-            while abs(observed_theta_z-current_theta_z) > 180:
-                if observed_theta_z > current_theta_z: current_theta_z += 360
-                else: observed_theta_z += 360
-            #average both orientations
-            new_theta_z = (num_new_observations*observed_theta_z + num_observations*current_theta_z) / (num_observations + num_new_observations)
+            while abs(observed_theta_z - current_theta_z) > 180:
+                if observed_theta_z > current_theta_z:
+                    current_theta_z += 360
+                else:
+                    observed_theta_z += 360
+            # Average both orientations.
+            new_theta_z = (
+                observed_confidence * observed_theta_z
+                +  current_confidence * current_theta_z
+            ) / (
+                 current_confidence
+                + observed_confidence
+            )
 
-        #CALCULATE EXTRA FIELD WHEN APPLICABLE
-        if observed_extra_field == -1234.5:
-            new_extra_field = current_extra_field
-        elif current_extra_field == -1234.5:
-            new_extra_field = observed_extra_field
-        else:
-            if label == "Gate": #GATE, symbol on left (0 or 1) -> take weighted average
-                new_extra_field = (num_new_observations*observed_extra_field + num_observations*current_extra_field) / (num_observations + num_new_observations)
-            elif label == "Buoy":
-                observed_first_buoy_symbol_location = math.floor(observed_extra_field / 10)
-                observed_second_buoy_symbol_location = observed_extra_field - 10 * math.floor(observed_extra_field / 10)
-                current_first_buoy_symbol_location = math.floor(current_extra_field / 10)
-                current_observed_second_buoy_symbol_location = current_extra_field - 10 * math.floor(current_extra_field / 10)
-                #TODO!!!! fix this somehow
+        # Calculate extra_field when applicable.
+        if label == "Gate":  # Gate, symbol on left (0 or 1) -> take weighted average.
+            if observed_extra_field == NULL_PLACEHOLDER:
+                new_extra_field = current_extra_field
+            elif current_extra_field == NULL_PLACEHOLDER:
                 new_extra_field = observed_extra_field
             else:
-                new_extra_field = -1234.5
-            #TODO: elif for symbols?
+                new_extra_field = (
+                    observed_confidence * observed_extra_field
+                    +  current_confidence * current_extra_field
+                ) / (
+                     current_confidence
+                    + observed_confidence
+                )
+        else:
+            new_extra_field = NULL_PLACEHOLDER
+
+    # calculate the new confidence as the probability that neither of the existing or new observation are incorrect
+    p_incorrect_current = 1 - current_confidence
+    p_incorrect_observed = 1 - observed_confidence
+    p_correct_current = current_confidence
+    p_correct_observed = observed_confidence
+
+    p_incorrect = p_incorrect_current * p_incorrect_observed
+    p_imperfect = p_correct_current * p_incorrect_observed
+    p_imperfect += p_incorrect_current * p_correct_observed
+
+    # Assume that imperfect readings cause incorrect estimates 25% of the time
+    p_incorrect += 0.25 * p_imperfect
+
+    new_confidence = 1.0 - p_incorrect
+
+    # limit confidence to 50% above the highest confidence (observation or current)
+    # new_confidence = min(1.5 * max(observed_confidence, current_confidence), new_confidence)
 
     object_map[obj_i][1] = new_x
     object_map[obj_i][2] = new_y
@@ -133,45 +294,71 @@ def updateMap(obj_i, observation):
     object_map[obj_i][4] = new_theta_z
     object_map[obj_i][5] = new_extra_field
     object_map[obj_i][6] += num_new_observations
+    object_map[obj_i][7] = new_confidence
 
-#calculate euclidian distance between two objects
+
+# Calculate euclidian distance between two objects.
 def dist(obj1, obj2):
     x1, y1, z1 = obj1
     x2, y2, z2 = obj2
-    return math.sqrt((x2-x1)**2 + (y2-y1)**2 + (z2-z1)**2)
-    
-#combine similar/close objects in the map into one object
-def reduceMap():
+    return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2)
+
+
+# Combine similar/close objects in the map into one object.
+def reduce_map():
     num_objs_deleted = 0
     for i in range(len(object_map)):
         idx = i - num_objs_deleted
-        observed_label, observed_x, observed_y, observed_z, _, _, _ = object_map[idx]
-        closest_obj = findClosestObject([observed_label, observed_x, observed_y, observed_z], indexToIgnore=idx)
-        if closest_obj == -1: continue
+        observed_label, observed_x, observed_y, observed_z, _, _, _, _ = object_map[idx]
+        closest_obj = find_closest_object(
+            [observed_label, observed_x, observed_y, observed_z], indexToIgnore=idx
+        )
+        if closest_obj == -1:
+            continue
         else:
-            updateMap(closest_obj, object_map[idx])
+            update_map(closest_obj, object_map[idx])
             del object_map[i]
             num_objs_deleted += 1
 
-#publish a version of the map with only the objects with a certain number of observations
-def publishMap():
-    confirmedMap = [obj for obj in object_map if obj[6] > min_observations]
-    map_msg = ObjectMap()
-    map_msg.label = [obj[0] for obj in confirmedMap]
-    map_msg.x = [obj[1] for obj in confirmedMap]
-    map_msg.y = [obj[2] for obj in confirmedMap]
-    map_msg.z = [obj[3] for obj in confirmedMap]
-    map_msg.theta_z = [obj[4] for obj in confirmedMap]
-    map_msg.extra_field = [obj[5] for obj in confirmedMap]
-    obj_pub.publish(map_msg)
+
+# Publish a version of the map with only the objects
+# with a certain number of observations.
+def publish_map():
+    confirmedMap = [obj for obj in object_map if obj[6] > MIN_OBSERVATIONS]
+
+    # Create an array of ObjectMap.
+    map_msg_array = VisionObjectArray()
+    for obj in confirmedMap:
+        map_msg = VisionObject()
+        map_msg.label = obj[0]
+        map_msg.x = obj[1]
+        map_msg.y = obj[2]
+        map_msg.z = obj[3]
+        map_msg.theta_z = obj[4]
+        map_msg.extra_field = obj[5]
+        map_msg.confidence = obj[7]
+        map_msg_array.array.append(map_msg)
+    obj_pub.publish(map_msg_array)
 
 
-min_observations = 5
-object_map = []
+if __name__ == "__main__":
+    rospy.init_node("object_map")
 
-sameObjectRadius = 3 #in same units as state_x, y, z etc (meters i think)
+    MIN_OBSERVATIONS = rospy.get_param("min_observations_for_mapping")
+    object_map = []
 
-rospy.init_node('object_map')
-obj_sub = rospy.Subscriber('vision/viewframe_detection', ObjectDetectionFrame, objectDetectCb)
-obj_pub = rospy.Publisher('vision/object_map', ObjectMap, queue_size=1)
-rospy.spin()
+    NULL_PLACEHOLDER = rospy.get_param("NULL_PLACEHOLDER")
+
+    # In same units as state_x, y, z etc (only for
+    # objects which can appear more than once).
+    same_object_radius_per_label = {
+        "Lane Marker": rospy.get_param("same_object_radius_lane_marker")
+    }
+
+    obj_pub = rospy.Publisher("vision/object_map", VisionObjectArray, queue_size=1)
+
+    obj_sub = rospy.Subscriber(
+        "vision/viewframe_detection", VisionObjectArray, object_detect_cb
+    )
+
+    rospy.spin()

@@ -1,8 +1,0 @@
-# largest size of either axis of image after downscaling
-100
-# blur 1 amount
-0.1
-# color tolerance
-0.08
-# blur 2 amount
-0.04

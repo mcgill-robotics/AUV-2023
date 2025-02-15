@@ -1,0 +1,3 @@
+<launch>
+    <node name="unity" pkg="sim" type="sim.x86_64" args="-batchmode -nographics" output="log"/>
+</launch>

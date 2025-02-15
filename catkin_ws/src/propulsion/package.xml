@@ -19,15 +19,11 @@
   <build_depend>python3-numpy</build_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>rospy</build_depend>
-  <build_depend>rosserial_arduino</build_depend>
-  <build_depend>rosserial_client</build_depend>
 
   <exec_depend>auv_msgs</exec_depend>
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>python3-numpy</exec_depend>
   <exec_depend>roscpp</exec_depend>
   <exec_depend>rospy</exec_depend>
-  <exec_depend>rosserial_arduino</exec_depend>
-  <exec_depend>rosserial_client</exec_depend>
 
 </package>

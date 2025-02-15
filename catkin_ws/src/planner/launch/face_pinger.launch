@@ -1,0 +1,3 @@
+<launch>
+	<node pkg="planner" name="face_pinger" type="face_pinger.py" respawn="False" output="screen"/>
+</launch>

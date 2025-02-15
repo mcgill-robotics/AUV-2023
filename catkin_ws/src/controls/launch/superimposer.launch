@@ -1,3 +1,0 @@
-<launch>
-	<node name="superimposer" pkg="controls" type="superimposer.py" respawn="true" output="screen"></node>
-</launch>

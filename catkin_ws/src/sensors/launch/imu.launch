@@ -1,0 +1,11 @@
+<launch>
+	<node name="sbg_device" pkg="sbg_driver" type="sbg_device" output="screen" respawn="true">
+		<rosparam command="load" file="$(find sensors)/config/sbg_imu.yaml"/>
+		<remap from="/imu/data" to="/sensors/imu/raw"/>
+	</node>
+
+	<node name="imu_republish" pkg="sensors" type="imu_republisher" output="screen">
+        <param name="angular_velocity_variance" value="0.000000075"/>
+		<param name="acceleration_variance" value="0.00005"/>
+    </node>
+</launch>

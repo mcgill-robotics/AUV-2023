@@ -1,3 +1,0 @@
-<launch>
-        <include file="$(find propulsion)/launch/thrust_mapper.launch" />
-</launch>

@@ -1,0 +1,20 @@
+<launch>
+	<!-- <include file="$(find bringup)/launch/bringup.launch">
+		<arg name="bag" value="true" />
+	</include> -->
+	<include file="$(find planner)/launch/params.launch"/>
+	<node pkg="planner" name="missions" type="missions.py" respawn="False" output="screen"/>
+	<param name="missions_to_objects" type="string" value="{'find_gate': 'Gate', 
+														    'find_lane_marker': 'Lane Marker', 
+														    'find_buoy': 'Buoy',
+														    'find_octagon': 'Octagon',
+														    'navigate_dropper': 'Bins'}"/>
+
+	<param name="missions_to_pinger_frequency" type="string" value="{'find_gate': 0, 
+																	 'find_lane_marker': 0, 
+																	 'find_buoy': 40000,
+																	 'find_octagon': 30000,
+																	 'navigate_dropper': 0}"/>
+	<param name="update_heading_time" value="3"/>
+	<param name="advance_distance" value="4"/>
+</launch>

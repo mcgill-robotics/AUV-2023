@@ -1,4 +1,0 @@
-<launch>
-	<include file="$(find state_estimation)/launch/transform_broadcaster.launch"/>
-	<include file="$(find state_estimation)/launch/state_aggregator.launch"/>
-</launch>

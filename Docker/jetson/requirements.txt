@@ -1,0 +1,15 @@
+matplotlib>=3.3.0
+numpy>=1.22.2 # pinned by Snyk to avoid a vulnerability
+opencv-python>=4.6.0
+pillow>=7.1.2
+pyyaml>=5.3.1
+requests>=2.23.0
+scipy>=1.4.1
+tqdm>=4.64.0
+pandas>=1.1.4
+seaborn>=0.11.0
+psutil  # system utilization
+py-cpuinfo  # display CPU info
+thop>=0.1.1  # FLOPs computation
+numpy-quaternion==2022.4.3
+https://developer.download.nvidia.cn/compute/redist/jp/v512/pytorch/torch-2.1.0a0+41361538.nv23.06-cp38-cp38-linux_aarch64.whl

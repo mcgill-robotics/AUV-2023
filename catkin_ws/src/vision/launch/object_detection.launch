@@ -1,7 +1,0 @@
-<launch>
-    <include file="$(find vision)/launch/stream-down-cam-usb.launch" />
-    <!-- <include file="$(find vision)/launch/stream-front-cam.launch" /> -->
-    <node name="object_detection" pkg="vision" type="object_detection.py" respawn="true"  output="screen"/>
-    <node name="mapping" pkg="vision" type="object_map.py" respawn="true"  output="screen"/>
-    <node name="debug_thresholding" pkg="vision" type="debug_thresholding.py" respawn="true"  output="screen"/>
-</launch>

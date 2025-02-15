@@ -1,0 +1,15 @@
+<launch>
+     <!-- Parameters from vision.launch -->
+     <param name="lane_marker_downscaling_size" value="100"/> <!-- Largest size of either axis of image after downscaling -->
+     <param name="lane_marker_blur_1_amt" value="0.1"/> <!-- First blur amount -->
+     <param name="lane_marker_color_tolerance" value="0.08"/> <!-- Color tolerance (to check if pixel is orange or not) -->
+     <param name="lane_marker_blur_2_amt" value="0.04"/> <!-- Second blur amount -->
+     <param name="testing" value="True"/>
+     <node name="lane_marker_measure" pkg="vision" type="lane_marker_measure.py" respawn="false" output="screen"/>
+
+     <!-- Parameters for testing -->
+     <param name="final_line_angle_tolerance" value="5"/> <!-- 5 degrees tolerance -->
+     <param name="center_point_tolerance" value="10"/> <!-- 10 pixels tolerance-->
+     <param name="lane_marker_folder_path" value="$(find vision)/tests/images/lane_marker"/>
+     <test test-name="test_lane_marker_measure" pkg="vision" type="test_lane_marker_measure.py"/>
+</launch>
