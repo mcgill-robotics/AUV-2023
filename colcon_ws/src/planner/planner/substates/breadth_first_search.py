@@ -10,7 +10,7 @@ from std_msgs.msg import String
 
 # search for objects by moving in a growing square (i.e. each side of square grows in size after every rotation)
 class BreadthFirstSearch(smach.State):
-    def __init__(self, control, mapping, target_class, min_objects, node):
+    def __init__(self, node, control, mapping, target_class, min_objects):
         super().__init__(outcomes=["success", "failure", "timeout"])
         self.control = control
         self.mapping = mapping

@@ -14,7 +14,7 @@ from std_msgs.msg import String
 class NavigatePinger(smach.State):
 
     def __init__(
-        self, control, state, mapping, pinger_frequency, update_heading_time, advance_distance, goal_object, node
+        self, node, control, state, mapping, pinger_frequency, update_heading_time, advance_distance, goal_object
     ):
         super().__init__(outcomes=["success", "failure", "timeout"])
         self.control = control

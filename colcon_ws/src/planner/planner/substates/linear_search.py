@@ -10,7 +10,7 @@ from std_msgs.msg import String
 
 # ASSUMES AUV IS FACING DIRECTION TO SEARCH IN
 class LinearSearch(smach.State):
-    def __init__(self, control, mapping, target_class, min_objects, node):
+    def __init__(self, node, control, mapping, target_class, min_objects):
         super().__init__(outcomes=["success", "failure", "timeout"])
         self.control = control
         self.mapping = mapping

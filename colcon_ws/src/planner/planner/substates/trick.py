@@ -6,7 +6,7 @@ import threading
 from std_msgs.msg import String
 
 class Trick(smach.State):
-    def __init__(self, control, node):
+    def __init__(self, node, control):
         super().__init__(outcomes=["success", "failure", "timeout"])
         self.node = node
         self.control = control
