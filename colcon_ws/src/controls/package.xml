@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>controls</name>
+  <version>0.1.0</version>
+  <description>The controls package</description>
+
+  <maintainer email="dev@mcgillrobotics.com">McGill Robotics</maintainer>
+  <license>GPLv3</license>
+  <url type="repository">https://github.com/mcgill-robotics/AUV-2025</url>
+
+  <depend>rclpy</depend>
+
+  <build_depend>actionlib</build_depend>
+  <build_depend>auv_msgs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>joy</build_depend>
+  <build_depend>joy_teleop</build_depend>
+  <build_depend>pid</build_depend>
+  <build_depend>python3-numpy</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>tf2</build_depend>
+  <build_depend>tf2_geometry_msgs</build_depend>
+  <build_depend>tf2_ros</build_depend>
+  <build_depend>tf</build_depend>
+
+  <exec_depend>actionlib</exec_depend>
+  <exec_depend>auv_msgs</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>joy</exec_depend>
+  <exec_depend>joy_teleop</exec_depend>
+  <exec_depend>pid</exec_depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>tf2</exec_depend>
+  <exec_depend>tf2_geometry_msgs</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>tf</exec_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+
+</package>

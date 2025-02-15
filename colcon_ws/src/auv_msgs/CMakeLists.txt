@@ -48,9 +48,3 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 )
 
 ament_export_dependencies(${MSG_DEP_SET})
-
-ament_package()
-
-
-
-

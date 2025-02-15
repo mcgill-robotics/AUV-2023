@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-<<<<<<< HEAD
-=======
 import rclpy
 from rclpy.node import Node
 from rclpy.clock import Clock
@@ -8,7 +6,6 @@ from rclpy import Duration
 from substates.utility.controller import Controller
 from auv_msgs.msg import ThrusterMicroseconds
 from std_msgs.msg import Float64
->>>>>>> 6b75633b3de439bad49d7369c337618fe9917ea9
 import keyboard
 import pickle
 import time
@@ -84,7 +81,6 @@ class JoyStick(Node):
         self.RECORDING.append(keyboard_state)
 
     def joystick(self, keyboard_state=None):
-<<<<<<< HEAD
         """
         Detects keyboard key presses and react by publishing the PWM force variables.
 
@@ -98,8 +94,6 @@ class JoyStick(Node):
         Returns:    
             boolean
         """
-=======
->>>>>>> 6b75633b3de439bad49d7369c337618fe9917ea9
         desired_x_force = 0
         desired_y_force = 0
         desired_z_force = 0

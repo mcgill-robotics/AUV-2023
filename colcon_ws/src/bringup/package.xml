@@ -9,10 +9,15 @@
 
   <buildtool_depend>colcon</buildtool_depend>
   
-  
   <depend>controls</depend>
   <depend>planner</depend>
   <depend>propulsion</depend>
   <depend>state_estimation</depend>
+
+  <buildtool_depend>ament_cmake_ros</buildtool_depend>
+  <depend>rclcpp</depend>
+  <export>
+      <build_type>ament_cmake</build_type>
+  </export>
 
 </package>
