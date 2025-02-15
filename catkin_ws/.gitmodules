@@ -1,0 +1,3 @@
+[submodule "catkin_ws/src/auv-sim-gazebo"]
+    path = catkin_ws/src/auv-sim-gazebo
+    url = https://github.com/mcgill-robotics/auv-sim-gazebo
