@@ -6,7 +6,7 @@ from .utility.functions import *
 
 
 class Quali(smach.State):
-     def __init__(self, control, node):
+     def __init__(self, node, control):
           super().__init__(outcomes=["success", "failure", "timeout"])
           self.control = control
           self.node = node

@@ -9,7 +9,7 @@ from std_msgs.msg import String
 
 
 class NavigateDropper(smach.State):
-    def __init__(self, control, mapping, state, node):
+    def __init__(self, node, control, mapping, state):
         super().__init__(outcomes=["success", "failure", "timeout"])
         self.control = control
         self.mapping = mapping

@@ -5,7 +5,7 @@ import threading
 from std_msgs.msg import String
 
 class NavigateGate(smach.State):
-    def __init__(self, control, mapping, state, goThrough, node):
+    def __init__(self, node, control, mapping, state, goThrough):
         super().__init__(outcomes=["success", "failure", "timeout"])
         self.control = control
         self.mapping = mapping

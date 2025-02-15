@@ -10,7 +10,7 @@ from std_msgs.msg import String
 
 
 class NavigateLaneMarker(smach.State):
-    def __init__(self, control, mapping, state, origin_class, node):
+    def __init__(self, node, control, mapping, state, origin_class):
         super().__init__(outcomes=["success", "failure", "timeout"])
         self.control = control
         self.mapping = mapping
