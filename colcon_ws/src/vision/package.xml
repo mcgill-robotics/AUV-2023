@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>vision</name>
+  <version>0.1.0</version>
+  <description>Package for Computer Vision for McGill Robotics AUV</description>
+  <maintainer email="dev@mcgillrobotics.com">McGill Robotics</maintainer>
+  <license>MIT</license>
+  <url type="repository">https://github.com/mcgill-robotics/AUV-2025</url>
+
+  <buildtool_depend>colcon</buildtool_depend>
+
+  <build_depend>auv_msgs</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>usb_cam</build_depend>
+
+  <exec_depend>auv_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>rospy</exec_depend>
+
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

@@ -8,7 +8,7 @@ from cv_bridge import CvBridge
 from common_utils import crop_to_bbox
 from point_cloud import get_xyz_image
 
-from auv_msgs.msg import VisionObjectArray
+from auv_msgs.msg import VisionObjectArray  # Not Used
 from std_msgs.msg import Float64
 from geometry_msgs.msg import Pose
 from sensor_msgs.msg import Image, CameraInfo
