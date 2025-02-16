@@ -34,9 +34,9 @@ class EffortServer(BaseServer):
             "/controls/server/effort",
             EffortAction,
             execute_cb=self.callback,
-            goal_callback = self.goal_callback,
+            goal_callback=self.goal_callback,
             cancel_callback=self.cancel_callback,
-            execute_callback= self.execute_callback,
+            execute_callback=self.execute_callback,
             callback_group=ReentrantCallbackGroup()
         )
     
