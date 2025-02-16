@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-# REPLACED BY __INIT__.PY WILL DELETE WHEN CONFIRMED THIS IS NOT NEEDED
-
 import rclpy
 
 from rclpy.node import Node

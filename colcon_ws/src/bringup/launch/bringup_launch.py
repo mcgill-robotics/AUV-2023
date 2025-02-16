@@ -17,7 +17,7 @@ def generate_launch_description():
 
     # Include state_estimation launch file
     state_estimation_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([launch.substitutions.FindPackageShare("state_estimation"), '/launch/state_estimation.launch.py']),
+        PythonLaunchDescriptionSource([launch.substitutions.FindPackageShare("state_estimation"), '/launch/state_estimation_launch.py']),
         launch_arguments={'sim': LaunchConfiguration('sim'), 'ekf': LaunchConfiguration('ekf')}.items()
     )
 
@@ -25,7 +25,7 @@ def generate_launch_description():
     sensors_launch = GroupAction(
         actions=[
             IncludeLaunchDescription(
-                PythonLaunchDescriptionSource([launch.substitutions.FindPackageShare("sensors"), '/launch/sensors.launch.py']),
+                PythonLaunchDescriptionSource([launch.substitutions.FindPackageShare("sensors"), '/launch/sensors_launch.py']),
                 launch_arguments={'vision': LaunchConfiguration('vision')}.items()
             )
         ],
@@ -36,7 +36,7 @@ def generate_launch_description():
     sensors_status_launch = GroupAction(
         actions=[
             IncludeLaunchDescription(
-                PythonLaunchDescriptionSource([launch.substitutions.FindPackageShare("sensors"), '/launch/sensors_status.launch.py'])
+                PythonLaunchDescriptionSource([launch.substitutions.FindPackageShare("sensors"), '/launch/sensors_status_launch.py'])
             ),
             launch_ros.actions.Node(
                 package='sensors',
@@ -51,13 +51,13 @@ def generate_launch_description():
 
     # Include controls launch file
     controls_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([launch.substitutions.FindPackageShare("controls"), '/launch/controls.launch.py']),
+        PythonLaunchDescriptionSource([launch.substitutions.FindPackageShare("controls"), '/launch/controls_launch.py']),
         launch_arguments={'sim': LaunchConfiguration('sim'), 'actions': LaunchConfiguration('actions')}.items()
     )
 
     # Include propulsion launch file
     propulsion_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([launch.substitutions.FindPackageShare("propulsion"), '/launch/propulsion.launch.py']),
+        PythonLaunchDescriptionSource([launch.substitutions.FindPackageShare("propulsion"), '/launch/propulsion_launch.py']),
         launch_arguments={'sim': LaunchConfiguration('sim')}.items()
     )
 
@@ -65,7 +65,7 @@ def generate_launch_description():
     vision_launch = GroupAction(
         actions=[
             IncludeLaunchDescription(
-                PythonLaunchDescriptionSource([launch.substitutions.FindPackageShare("vision"), '/launch/vision.launch.py']),
+                PythonLaunchDescriptionSource([launch.substitutions.FindPackageShare("vision"), '/launch/vision_launch.py']),
                 launch_arguments={'sim': LaunchConfiguration('sim')}.items()
             )
         ],
