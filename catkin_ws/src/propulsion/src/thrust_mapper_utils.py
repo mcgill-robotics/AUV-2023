@@ -1,6 +1,12 @@
 # forces produced by T200 thruster at 14V (N)
-MAX_FWD_FORCE = 4.52 * 9.81
-MAX_BKWD_FORCE = -3.52 * 9.81
+SCALING_FACTOR = 0.9  # Tune based on observed thruster performance
+MAX_FWD_FORCE = 4.52 * 9.81 * SCALING_FACTOR
+MAX_BKWD_FORCE = -3.52 * 9.81 * SCALING_FACTOR
+
+# Linear transition region around zero force (Newtons)
+DEADBAND_EPSILON = 2.0  # Tune based on thruster response
+#Creates a smooth transition around zero force to avoid abrupt changes in PWM.
+
 
 thruster_mount_dirs = [1, -1, -1, 1, -1, 0.5, -0.5, 1]
 #1 is forward, -1 is backward, 0.5 is half thrust in specific direction
@@ -8,23 +14,31 @@ thruster_mount_dirs = [1, -1, -1, 1, -1, 0.5, -0.5, 1]
 
 def force_to_pwm(force):
     """
-    Converts a force (N) to PWM (microseconds)
+    Converts a force (N) to PWM (microseconds) with smooth zero transition
+    and aged thruster adjustments.
     """
-
     force = float(force)
     force = min(max(force, MAX_BKWD_FORCE), MAX_FWD_FORCE)
 
-    # Different conversion for negative and positive forces
-    if force > 0.0001:
-        return int(positiveForceCurve(force / 9.81))
-
-    elif force < 0.0001:
-        return int(negativeForceCurve(force / 9.81))
-
-    # Intersection is (0.0, 1500)
+    # Calculate linear transition boundaries
+    if abs(force) <= DEADBAND_EPSILON:
+        # Linear transition between positive and negative curves
+        if force >= 0:
+            pwm_upper = positiveForceCurve(DEADBAND_EPSILON / 9.81)
+            pwm = 1500 + (force / DEADBAND_EPSILON) * (pwm_upper - 1500)
+        else:
+            pwm_lower = negativeForceCurve(-DEADBAND_EPSILON / 9.81)
+            pwm = 1500 + (force / DEADBAND_EPSILON) * (1500 - pwm_lower)
     else:
-        return 1500
+        if force > 1e-4:
+            pwm = positiveForceCurve(force / 9.81)
+        elif force < -1e-4:
+            pwm = negativeForceCurve(force / 9.81)
+        else:
+            pwm = 1500
 
+    # Ensure valid PWM range (typical ESC limits)
+    return int(min(max(pwm, 1100), 1900))
 
 def negativeForceCurve(force):
     """
