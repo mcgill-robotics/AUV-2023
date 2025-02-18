@@ -29,9 +29,12 @@ RUN apt install -y ros-humble-desktop-full
 # Install the ZED ROS2 Wrapper
 WORKDIR /root/ros2_ws/src
 RUN git clone --recursive https://github.com/stereolabs/zed-ros2-wrapper.git
+RUN git clone https://github.com/stereolabs/zed-ros2-interfaces.git
 
 # Check that all the dependencies are satisfied
 WORKDIR /root/ros2_ws
+RUN /bin/bash -c "source /opt/ros/humble/setup.bash && \
+  colcon build --packages-select zed_interfaces zed_msgs --symlink-install"
 
 RUN cd src && git clone https://github.com/ros-drivers/nmea_msgs \
   &&  git clone -b ros2 https://github.com/ros-geographic-info/geographic_info.git && cd .. 
@@ -45,6 +48,7 @@ RUN apt-get update -y || true && rosdep init && rosdep update && \
 
 # Build the dependencies and the ZED ROS2 Wrapper
 RUN /bin/bash -c "source /opt/ros/humble/setup.bash && \
+  source /root/ros2_ws/install/setup.bash && \
   colcon build --parallel-workers $(nproc) --symlink-install \
   --event-handlers console_direct+ --base-paths src \
   --cmake-args ' -DCMAKE_BUILD_TYPE=Release' \
