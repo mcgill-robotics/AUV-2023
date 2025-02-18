@@ -3,6 +3,8 @@ MAX_FWD_FORCE = 4.52 * 9.81
 MAX_BKWD_FORCE = -3.52 * 9.81
 
 thruster_mount_dirs = [1, -1, -1, 1, -1, 0.5, -0.5, 1]
+#1 is forward, -1 is backward, 0.5 is half thrust in specific direction
+#If force is exactly zero, returns 1500 μs (neutral signal, no movement).
 
 def force_to_pwm(force):
     """
