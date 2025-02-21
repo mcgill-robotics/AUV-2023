@@ -16,19 +16,23 @@ from geometry_msgs.msg import Wrench
 # constant parameters of the thruster positions
 l = rospy.get_param("distance_thruster_thruster_length")
 w = rospy.get_param("distance_thruster_thruster_width")
-alpha = rospy.get_param("angle_thruster")
+alpha = np.radians(rospy.get_param("angle_thruster")) #this for some reason is set to 45
 a = rospy.get_param("distance_thruster_middle_length")
 
 
+#must match physical layout
+#Verify directions (forward thrust should move vehicle forward)
+#rostopic pub /controls/effort geometry_msgs/Wrench "force:
 
+#This looks problematic, column is thruster and row is DOf
 T = np.array(
     [
-        [np.cos(alpha), 0, 0, -np.cos(alpha), -np.cos(alpha), 0, 0, np.cos(alpha)],
-        [-np.sin(alpha), 0, 0, -np.sin(alpha), np.sin(alpha), 0, 0, np.sin(alpha)],
-        [0, -1, -1, 0, 0, -1, -1, 0],
-        [0, w / 2, w / 2, 0, 0, -w / 2, -w / 2, 0],
+        [np.cos(alpha), 0, 0, -np.cos(alpha), -np.cos(alpha), 0, 0, np.cos(alpha)], #this row uses cos and -cos to model how thrusters contri to forward mtoion(surge)
+        [-np.sin(alpha), 0, 0, -np.sin(alpha), np.sin(alpha), 0, 0, np.sin(alpha)], #sin -sin to capture lateral sway
+        [0, -1, -1, 0, 0, -1, -1, 0],#show whcih thrusters provide vertical force !!!
+        [0, w / 2, w / 2, 0, 0, -w / 2, -w / 2, 0], # 4-5contribute to the rotational forces (roll, pitch) about the center of mass. Incorrect values or signs here could cause unwanted tilting or rotation.
         [0, -a, a, 0, 0, a, -a, 0],
-        [
+        [ #all this is yaw
             w / 2 * np.cos(alpha) + l / 2 * np.sin(alpha),
             0,
             0,
