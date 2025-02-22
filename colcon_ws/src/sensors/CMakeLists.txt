@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.14.4)
 project(sensors)
 
 # Set CMAKE_CXX_STANDARD 17 (required for ament_cmake)

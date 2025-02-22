@@ -19,6 +19,5 @@ COPY /colcon_ws ./colcon_ws
 # Performs Check on Environment Variables for Humble (UNIX-systems)
 RUN printenv | grep -i ROS
 
-
 # Due to ROS 2 being ran on multiple ws, might have to config in future
 WORKDIR /

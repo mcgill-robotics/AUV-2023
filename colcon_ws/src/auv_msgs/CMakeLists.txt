@@ -13,7 +13,7 @@ endif()
 set(MSG_DEP_SET 
 	geometry_msgs 
 	std_msgs
-#	actionlib_msgs
+	actionlib_msgs
 )
 
 set(msg_files	
@@ -35,8 +35,12 @@ set(action_files
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+
+find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+
 find_package(rosidl_default_generators REQUIRED)
+
 foreach(dep IN LISTS MSG_DEP_SET)
 	find_package(${dep} REQUIRED)
 endforeach()
@@ -48,3 +52,5 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 )
 
 ament_export_dependencies(${MSG_DEP_SET})
+
+ament_package()
