@@ -18,7 +18,7 @@ def force_to_pwm(force):
     and aged thruster adjustments.
     """
     force = float(force)
-    force = min(max(force, MAX_BKWD_FORCE), MAX_FWD_FORCE)
+    force = min(max(force, MAX_BKWD_FORCE), MAX_FWD_FORCE) #Ensures valid force range
 
     # Calculate linear transition boundaries
     if abs(force) <= DEADBAND_EPSILON:
