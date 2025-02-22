@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+  ros2:
+    build: 
+      context: ../../.
+      dockerfile: Docker/humble-base-2/Dockerfile
+    volumes:
+      - ros2:/var/lib/ros2/data
+      - ./colcon_ws:/colcon_ws  # Ensure the workspace is mounted
+    environment:
+      - ROS_DOMAIN_ID=0
+      - ROS_INSTALL_PATH=/opt/ros/humble
+    stdin_open: true
+    tty: true
+    privileged: true   # Allows access to serial devices (if required)
+    devices:
+      - "/dev/power:/dev/power"  # Passes the serial device to the container
+    entrypoint: ["/bin/bash", "-c", "source /opt/ros/humble/setup.bash && source /colcon_ws/install/setup.bash && bash"]
+
+volumes:
+  ros2:
