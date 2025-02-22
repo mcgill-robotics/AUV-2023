@@ -11,7 +11,9 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en     
 
 # Install Python and pip
-RUN apt-get install -y python3 python3-pip python3-venv
+RUN apt-get update && \
+    apt-get install -y python3 python3-pip python3.10-venv || \
+    apt-get install -y python3-venv
 
 # Sources config files on terminal bootup by adding to .bashrc
 RUN echo "source ../opt/ros/humble/setup.bash" >> ~/.bashrc
