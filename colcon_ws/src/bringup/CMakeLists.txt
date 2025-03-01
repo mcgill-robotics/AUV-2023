@@ -9,9 +9,6 @@ endif()
 # https://docs.ros.org/en/humble/How-To-Guides/Migrating-from-ROS1/Migrating-CPP-Packages.html
 find_package(ament_cmake_ros REQUIRED)
 
-find_package(controls REQUIRED)
-find_package(planner REQUIRED)
-find_package(propulsion REQUIRED)
 find_package(state_estimation REQUIRED)
 
 ament_export_dependencies(

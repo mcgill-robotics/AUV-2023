@@ -19,6 +19,10 @@ RUN apt-get update && apt-get install -y \
     curl \
     build-essential
 
+# Ensure the micro-ROS setup script is sourced in new shells
+RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
+# RUN echo "source /colcon_ws/install/setup.bash" >> ~/.bashrc
+
 # Create the colcon workspace and clone micro-ROS repositories
 WORKDIR /colcon_ws/src
 RUN git clone -b humble https://github.com/micro-ROS/micro_ros_setup.git
@@ -34,10 +38,6 @@ RUN mkdir -p /colcon_ws/install
 
 # Build micro-ROS packages
 RUN bash -c "source /opt/ros/humble/setup.bash && colcon build --symlink-install"
-
-# Ensure the micro-ROS setup script is sourced in new shells
-RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
-RUN echo "source /colcon_ws/install/setup.bash" >> ~/.bashrc
 
 # Set the working directory
 WORKDIR /colcon_ws

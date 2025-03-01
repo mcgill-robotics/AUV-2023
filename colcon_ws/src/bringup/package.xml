@@ -8,11 +8,13 @@
   <url type="repository">https://github.com/mcgill-robotics/AUV-2025</url>
 
   <buildtool_depend>colcon</buildtool_depend>
-  
-  <depend>controls</depend>
-  <depend>planner</depend>
-  <depend>propulsion</depend>
+
   <depend>state_estimation</depend>
+
+  <!-- Note that controls is a python only package so only exec_depend is required -->
+  <exec_depend>controls</exec_depend>
+  <exec_depend>planner</exec_depend>
+  <exec_depend>propulsion</exec_depend>
 
   <buildtool_depend>ament_cmake_ros</buildtool_depend>
   <depend>rclcpp</depend>

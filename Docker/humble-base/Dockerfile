@@ -25,4 +25,8 @@ COPY /colcon_ws ./colcon_ws
 RUN printenv | grep -i ROS
 
 # Due to ROS 2 being ran on multiple ws, might have to config in future
-WORKDIR /
+WORKDIR /colcon_ws
+
+# RUN bash -c "source /opt/ros/humble/setup.bash && colcon build --symlink-install"
+
+ENTRYPOINT ["/ros_entrypoint.sh"]

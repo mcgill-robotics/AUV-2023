@@ -22,7 +22,7 @@ public:
 
     }
 private:
-    void odom_cb(const geometry_msgs::msg::PoseWithCovarianceStamped::ConstPtr& msg) {
+    void odom_cb(const geometry_msgs::msg::PoseWithCovarianceStamped::ConstSharedPtr& msg) {
         auto new_msg = *msg;
         new_msg.header.frame_id = "dvl";
         new_msg.pose.covariance[18] = variance;

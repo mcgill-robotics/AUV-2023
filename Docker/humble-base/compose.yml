@@ -15,6 +15,9 @@ services:
       
     stdin_open: true
     tty: true
+
+    command: tail -f /dev/null
+
   
 volumes:
   ros2:
