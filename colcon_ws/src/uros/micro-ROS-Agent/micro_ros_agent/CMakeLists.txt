@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.14.4)
+cmake_minimum_required(VERSION 3.5)
 
 option(UROSAGENT_GENERATE_PROFILE
   "Generates agent.refs according to the .msgs provided in the .repos" OFF
@@ -97,6 +97,13 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     YES
   )
 
+set_target_properties(${PROJECT_NAME} PROPERTIES
+  CXX_STANDARD
+    14
+  CXX_STANDARD_REQUIRED
+    YES
+  )
+
 target_compile_options(${PROJECT_NAME}
   PRIVATE
     $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>:-Wall>
@@ -143,11 +150,11 @@ if(UROSAGENT_GENERATE_PROFILE)
   get_filename_component(_COLCON_CALL_DIR "${_COLCON_CALL_DIR}" DIRECTORY)
 
   set(_PYTHON_SCRIPT_HEAD
-      "import os
-      import sys
-      sys.path.append('${_OUTPUT_PATH}')
-      from ${_PYTHON_PKG_TOOL} import *
-      "
+"import os
+import sys
+sys.path.append('${_OUTPUT_PATH}')
+from ${_PYTHON_PKG_TOOL} import *
+"
     )
 
   file(
