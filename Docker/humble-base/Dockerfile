@@ -38,14 +38,7 @@ RUN apt-get update && rosdep update && \
 
 RUN ../ros_entrypoint.sh colcon build
 
-RUN bash -c "source install/local_setup.bash" && \
-    bash -c "ros2 run micro_ros_setup create_agent_ws.sh" && \
-    ros2 run micro_ros_setup build_agent.sh && \
-    source install/local_setup.bash
-    
-WORKDIR /
-RUN echo "source /microros_ws/install/local_setup.bash" >> ~/.bashrc
-RUN echo "source /microros_ws/install/local_setup.bash" >> ~/.ros_entrypoint.sh
+RUN bash -c "source install/local_setup.bash"
 
 WORKDIR /colcon_ws
 RUN bash -c "../ros_entrypoint.sh colcon build --symlink-install --packages-skip vision micro_ros_msgs micro_ros_agent"
