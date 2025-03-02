@@ -21,27 +21,15 @@ RUN echo "source ../ros_entrypoint.sh" >> ~/.bashrc
 
 # Sourcing terminal and copying repos
 COPY /colcon_ws ./colcon_ws
-# Due to ROS 2 being ran on multiple ws, might have to config in future
 WORKDIR /colcon_ws
-RUN ../ros_entrypoint.sh colcon build --symlink-install --packages-skip vision micro_ros_agent
-
-# Getting Micro-ROS
-WORKDIR /
-RUN mkdir microros_ws
-
-WORKDIR /microros_ws
-
-RUN git clone -b $ROS_DISTRO https://github.com/micro-ROS/micro_ros_setup.git src/micro_ros_setup
+RUN ../ros_entrypoint.sh colcon build --symlink-install --packages-skip vision
 
 RUN apt-get update && rosdep update && \
-    ../ros_entrypoint.sh rosdep install --from-paths src --ignore-src -y 
-
-RUN ../ros_entrypoint.sh colcon build
+    ../ros_entrypoint.sh rosdep install --from-paths src/uros --ignore-src -y 
 
 RUN bash -c "source install/local_setup.bash"
 
-WORKDIR /colcon_ws
-RUN bash -c "../ros_entrypoint.sh colcon build --symlink-install --packages-skip vision micro_ros_msgs micro_ros_agent"
+RUN bash -c "../ros_entrypoint.sh colcon build --symlink-install --packages-skip vision"
 
 # Performs Check on Environment Variables for Humble (UNIX-systems)
 RUN printenv | grep -i ROS
